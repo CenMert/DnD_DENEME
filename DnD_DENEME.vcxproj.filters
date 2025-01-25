@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ui">
+      <UniqueIdentifier>{f5a2540f-a5d1-4a0b-807f-69487ca2efcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\include">
+      <UniqueIdentifier>{6a9b6478-aba4-4ca6-ba4d-3001ae3a8059}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\src">
+      <UniqueIdentifier>{5c541e0d-e733-4acc-b727-02c8f2c7f286}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gen">
+      <UniqueIdentifier>{828e0e3e-a105-44e0-96a8-33ed22151012}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gen\include">
+      <UniqueIdentifier>{8736ec66-9c23-4d89-8879-8d08c794a1a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gen\src">
+      <UniqueIdentifier>{3ef85a3a-4dc7-4869-81de-467446b09686}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="player.h">
+      <Filter>gen\include</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>gen\include</Filter>
+    </ClInclude>
+    <ClInclude Include="session.h">
+      <Filter>gen\include</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="MainMenuFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="game.cpp">
+      <Filter>gen\src</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenuFrame.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsFrame.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFrame.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayFrame.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
