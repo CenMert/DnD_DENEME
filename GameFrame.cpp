@@ -1,6 +1,7 @@
 #include "GameFrame.h"
 #include "player.h"
 #include "session.h"
+#include "json.hpp"
 
 #include <string>
 #include <vector>
@@ -14,7 +15,7 @@ wxBEGIN_EVENT_TABLE(GameFrame, wxFrame)
 wxEND_EVENT_TABLE()
 
 GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
-	: wxFrame(parent, wxID_ANY, "The Game")
+	: wxFrame(parent, wxID_ANY, "The Game"), game(std::make_shared<Game>(GameFolder.ToStdString()))
 {
 	// Configure all the directory elements to use later
 	const std::string GameDirectory = "GameData/" + GameFolder.ToStdString();

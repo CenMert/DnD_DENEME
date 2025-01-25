@@ -146,6 +146,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameFrame.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="MainMenuFrame.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="PlayFrame.h" />

@@ -40,7 +40,7 @@ private:
 	wxString PlayersDir;
 	wxString SessionsDir;
 
-	Game* game;
+	std::shared_ptr<Game> game;
 
 	std::string fontStyle = "Papyrus";
 	wxColour buttonColour = wxColour(166, 85, 28);

@@ -46,6 +46,7 @@
     <ClInclude Include="PlayFrame.h">
       <Filter>ui\include</Filter>
     </ClInclude>
+    <ClInclude Include="json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp">

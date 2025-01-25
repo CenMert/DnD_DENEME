@@ -18,8 +18,15 @@ The game will be loaded this class's object and the game will be played using th
 class Game {
     //BIG3
 public:
-    Game() {}
-    Game(std::string gameName) : gameName(gameName) {};
+    Game() 
+        : players(std::make_shared<std::vector<Player>>()),
+        sessions(std::make_shared<std::vector<Session>>())
+    {}
+    Game(std::string gameName) 
+        : gameName(gameName),
+        players(std::make_shared<std::vector<Player>>()),
+        sessions(std::make_shared<std::vector<Session>>())
+    {}
     ~Game() {}
     Game operator=(const Game& g) {
         players = g.players;
@@ -32,18 +39,18 @@ public:
     }
 
     // getters
-    vector<Player> getPlayers() { return players; }
-    vector<Session> getSessions() { return sessions; }
+    std::shared_ptr < vector<Player> > getPlayers() { return players; }
+    std::shared_ptr < vector<Session> > getSessions() { return sessions; }
     std::string getGameName() { return gameName; }
 
     // setters
-    void setPlayers(vector<Player> players) { this->players = players; }
-    void setSessions(vector<Session> sessions) { this->sessions = sessions; }
+    void setPlayers(const std::vector<Player>& newPlayers) { *players = newPlayers; }
+    void setSessions(const std::vector<Session>& newSessions) { *sessions = newSessions; }
     void setGameName(std::string name) { this->gameName = name; }
 
     // other functions
-    void addPlayer(Player p) { players.push_back(p); }
-    void addSession(Session s) { sessions.push_back(s); }
+    void addPlayer(const Player& p) { players->push_back(p); }
+    void addSession(const Session& s) { sessions->push_back(s); }
 
     //implemented in .cpp file
     void saveGame();
@@ -51,8 +58,8 @@ public:
 
 private:
     std::string gameName;
-    vector<Player> players;
-    vector<Session> sessions; // this will hold the sessions that are currently being played
+    std::shared_ptr < vector<Player> > players;
+    std::shared_ptr < vector<Session> > sessions; // this will hold the sessions that are currently being played
     // you can find the sessions saved files in "sessions" folder
 
 
