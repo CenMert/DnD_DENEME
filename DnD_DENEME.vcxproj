@@ -159,6 +159,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameFrame.cpp" />
     <ClCompile Include="MainMenuFrame.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="PlayFrame.cpp" />
     <ClCompile Include="SettingsFrame.cpp" />
   </ItemGroup>

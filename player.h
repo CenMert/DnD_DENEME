@@ -15,6 +15,7 @@ This file is implemented inline because it is a pure virtual class and it will n
 class Player {
 public:
     Player(string name, string characterName) : name(name), characterName(characterName) {}
+    Player() {};
 
     ~Player() {}
 
@@ -37,6 +38,7 @@ public:
     void setCharacterName(const string characterName) { this->characterName = characterName; }
     void setHealth(const double health) { this->health = health; }
     void setBaseAttack(const double baseAttack) { this->baseAttack = baseAttack; }
+    void setStory(const std::string story) { this->story = story; }
 
 private:
 
