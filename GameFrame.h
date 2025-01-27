@@ -13,7 +13,6 @@ class GameFrame : public wxFrame
 public:
 	GameFrame(wxWindow* parent, wxString GameFolder);
 private:
-	wxDECLARE_EVENT_TABLE();
 
 	// On Close
 	void OnClose(wxCloseEvent& event);
@@ -26,6 +25,8 @@ private:
 	void OnMapButtonClicked(wxCommandEvent& evt);
 		// Im not sure whether this will work for all player details button
 	void OnPlayerDetailsButtonClicked(wxCommandEvent& evt);
+	void OnLoadButtonClicked(wxCommandEvent& evt);
+	void OnSaveButtonClicked(wxCommandEvent& evt);
 
 	// setters
 	void setGameFolder(const wxString GameFolder) { this->GameFolder = GameFolder; }
@@ -50,17 +51,13 @@ private:
 	wxString SessionsDir;	// GameData/Game1/sessions
 
 	std::shared_ptr<Game> game;
+	std::shared_ptr< vector<Player> > Players;
+	std::shared_ptr< vector<Session> > Sessions;
 
 	std::string fontStyle = "Papyrus";
 	wxColour buttonColour = wxColour(166, 85, 28);
 	wxColour backgroundColour = wxColour(204, 147, 114);
 	wxStaticText* dynamicText; // WTF??
-		
-		// These sizes are just experimental
-	wxSize SidePanelButtonSize = wxSize(10, 10);
-	wxSize DynamicTextSize = wxSize(300, 400);
-	wxSize PlayerCardSize = wxSize(100, 50);
-	wxSize PlayerCardButtonSize = wxSize(25, 10);
 
 };
 

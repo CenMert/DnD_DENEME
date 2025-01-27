@@ -21,10 +21,10 @@ public:
     }
 
     // getters
-    int getSessionID() { return sessionID; }
-    string getSessionName() { return sessionName; }
-    string getSessionDate() { return sessionCreatedDate; }
-    vector<string> getSessionText() { return sessionText; }
+    int getSessionID() const { return sessionID; }
+    string getSessionName() const { return sessionName; }
+    string getSessionDate() const { return sessionCreatedDate; }
+    vector<string> getSessionText() const { return sessionText; }
 
     // setters
     void setSessionID(const int id) { sessionID = id; }
