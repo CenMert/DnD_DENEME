@@ -12,6 +12,7 @@ class GameFrame : public wxFrame
 {
 public:
 	GameFrame(wxWindow* parent, wxString GameFolder);
+	~GameFrame() {};
 private:
 
 	// On Close
@@ -27,6 +28,8 @@ private:
 	void OnPlayerDetailsButtonClicked(wxCommandEvent& evt);
 	void OnLoadButtonClicked(wxCommandEvent& evt);
 	void OnSaveButtonClicked(wxCommandEvent& evt);
+
+	void OnNewSessionSaveButtonClicked(wxCommandEvent& evt);
 
 	// setters
 	void setGameFolder(const wxString GameFolder) { this->GameFolder = GameFolder; }
@@ -45,6 +48,22 @@ private:
 	void extractSessionsFromFolder();
 
 	// some constrains
+	// Example Folder Hierarcy
+	/*
+		-GameData/
+			|-Game1/
+				|-players/
+					|-Berke.json
+					|-Serhat.json
+				|-sessions/
+					|-session1.json
+					|-session1.txt
+					|-session2.json
+					|-session2.txt
+				|-maps/
+					|-DnD_Battle_Map.png
+	*/
+
 	wxString GameFolder;	// Game1
 	wxString GameDir;		// GameData/Game1
 	wxString PlayersDir;	// GameData/Game1/players
@@ -57,7 +76,10 @@ private:
 	std::string fontStyle = "Papyrus";
 	wxColour buttonColour = wxColour(166, 85, 28);
 	wxColour backgroundColour = wxColour(204, 147, 114);
-	wxStaticText* dynamicText; // WTF??
+	
+	// Text Editor to handle it on load and save functions
+	wxTextCtrl* textEditor;
+	Player* selectedPlayer;
 
 };
 

@@ -47,6 +47,12 @@
       <Filter>ui\include</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="MapFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDetailsFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="game.cpp">
@@ -69,6 +75,12 @@
     </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>gen\src</Filter>
+    </ClCompile>
+    <ClCompile Include="MapFrame.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerDetailsFrame.cpp">
+      <Filter>ui\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

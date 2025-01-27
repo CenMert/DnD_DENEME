@@ -39,9 +39,9 @@ public:
     }
 
     // getters
-    const std::shared_ptr < vector<Player> >& getPlayers() { return players; }
-    const std::shared_ptr < vector<Session> >& getSessions() { return sessions; }
-    const std::string getGameName() { return gameName; }
+    std::shared_ptr < vector<Player> >& getPlayers() { return players; }
+    std::shared_ptr < vector<Session> >& getSessions() { return sessions; }
+    std::string getGameName() { return gameName; }
 
     // setters
     void setPlayers(const std::vector<Player>& newPlayers) { *players = newPlayers; }

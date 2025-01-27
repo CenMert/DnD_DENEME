@@ -148,7 +148,9 @@
     <ClInclude Include="GameFrame.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="MainMenuFrame.h" />
+    <ClInclude Include="MapFrame.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="PlayerDetailsFrame.h" />
     <ClInclude Include="PlayFrame.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="session.h" />
@@ -159,7 +161,9 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameFrame.cpp" />
     <ClCompile Include="MainMenuFrame.cpp" />
+    <ClCompile Include="MapFrame.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="PlayerDetailsFrame.cpp" />
     <ClCompile Include="PlayFrame.cpp" />
     <ClCompile Include="SettingsFrame.cpp" />
   </ItemGroup>

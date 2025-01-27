@@ -1,4 +1,6 @@
 ﻿#include "GameFrame.h"
+#include "MapFrame.h"
+#include "PlayerDetailsFrame.h"
 #include "player.h"
 #include "session.h"
 #include "json.hpp"
@@ -19,12 +21,16 @@ enum Game_IDs {
 	ID_MapButton = 4,
 	ID_AddPlayerButton = 5,
 	ID_SaveButton = 6,
-	ID_LoadButton = 7
+	ID_LoadButton = 7,
+	ID_TextEditor = 8,
+
+	ID_SaveForNewSessionButton = 9
 };
 
 // Color and size settings
 wxColour buttonColour = wxColour(166, 85, 28);
 wxColour backgroundColour = wxColour(204, 147, 114);
+wxColour playerCardBGColour = wxColour(227, 208, 61);
 wxSize SidePanelButtonSize = wxSize(100, 25);
 wxSize DynamicTextSize = wxSize(600, 400);
 wxSize PlayerCardSize = wxSize(200, 100);
@@ -62,11 +68,19 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	wxButton* AddPlayerButton = new wxButton(SidePanelButton, ID_AddPlayerButton, "+Player", wxDefaultPosition, SidePanelButtonSize);
 	wxButton* SaveButton = new wxButton(SidePanelButton, ID_SaveButton, "Save", wxDefaultPosition, SidePanelButtonSize);
 	wxButton* LoadButton = new wxButton(SidePanelButton, ID_LoadButton, "Load", wxDefaultPosition, SidePanelButtonSize);
+	wxButton* SaveForNewSessionButton = new wxButton(SidePanelButton, ID_SaveForNewSessionButton, "Save for\nnew Session", wxDefaultPosition, wxSize(100, 35));
 
 	leftSizer->Add(MapButton, 0, wxEXPAND | wxALL, 5);
 	leftSizer->Add(AddPlayerButton, 0, wxEXPAND | wxALL, 5);
 	leftSizer->Add(SaveButton, 0, wxEXPAND | wxALL, 5);
 	leftSizer->Add(LoadButton, 0, wxEXPAND | wxALL, 5);
+	leftSizer->Add(SaveForNewSessionButton, 0, wxEXPAND | wxALL, 5);
+
+	MapButton->SetBackgroundColour(buttonColour);
+	AddPlayerButton->SetBackgroundColour(buttonColour);
+	SaveButton->SetBackgroundColour(buttonColour);
+	LoadButton->SetBackgroundColour(buttonColour);
+	SaveForNewSessionButton->SetBackgroundColour(buttonColour);
 
 	SidePanelButton->SetSizer(leftSizer);
 	contentSizer->Add(SidePanelButton, 0, wxEXPAND | wxALL, 5);
@@ -77,8 +91,11 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	DynamicTextPanel->SetBackgroundColour(backgroundColour);
 
 	wxBoxSizer* CenterSizer = new wxBoxSizer(wxVERTICAL);
-	wxTextCtrl* textEditor = new wxTextCtrl(DynamicTextPanel, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	CenterSizer->Add(textEditor, 1, wxEXPAND | wxALL, 5);
+	this->textEditor = new wxTextCtrl(DynamicTextPanel, ID_TextEditor, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+	this->textEditor->SetBackgroundColour(*wxBLACK);
+	this->textEditor->SetForegroundColour(*wxWHITE);
+
+	CenterSizer->Add(this->textEditor, 1, wxEXPAND | wxALL, 5);
 	DynamicTextPanel->SetSizer(CenterSizer);
 	contentSizer->Add(DynamicTextPanel, 1, wxEXPAND | wxALL, 5);
 
@@ -99,16 +116,18 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	for (size_t i = 0; i < playersLen; i++) {
 		wxPanel* playerCard = new wxPanel(PlayerCardPanel);
 		playerCard->SetMinSize(PlayerCardSize);
-		playerCard->SetBackgroundColour(wxColour(255, 255, 255));
+		playerCard->SetBackgroundColour(playerCardBGColour);
 
 		wxBoxSizer* cardSizer = new wxBoxSizer(wxVERTICAL);
 		wxStaticText* playerName = new wxStaticText(
 			playerCard, wxID_ANY, Players->at(i).getName(), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-		wxButton* playerDetails = new wxButton(
+		wxButton* PlayerDetailsButton = new wxButton(
 			playerCard, wxID_ANY, "Details", wxDefaultPosition, PlayerCardButtonSize);
 
+		PlayerDetailsButton->Bind(wxEVT_BUTTON, &GameFrame::OnPlayerDetailsButtonClicked, this);
+
 		cardSizer->Add(playerName, 0, wxALIGN_CENTER | wxTOP, 5);
-		cardSizer->Add(playerDetails, 0, wxALIGN_CENTER | wxBOTTOM, 5);
+		cardSizer->Add(PlayerDetailsButton, 0, wxALIGN_CENTER | wxBOTTOM, 5);
 		playerCard->SetSizer(cardSizer);
 		playerSizer->Add(playerCard, 0, wxEXPAND | wxALL, 5);
 	}
@@ -116,6 +135,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	// Button binding for left side panel.
 	LoadButton->Bind(wxEVT_BUTTON, &GameFrame::OnLoadButtonClicked, this);
 	SaveButton->Bind(wxEVT_BUTTON, &GameFrame::OnSaveButtonClicked, this);
+	MapButton->Bind(wxEVT_BUTTON, &GameFrame::OnMapButtonClicked, this);
 
 	PlayerCardPanel->SetSizer(playerSizer);
 	contentSizer->Add(PlayerCardPanel, 0, wxEXPAND | wxALL, 5);
@@ -150,6 +170,28 @@ Gamer object operations:
 	extractPlayersFromFolder();
 	extractSessionsFromFolder();
 	// We have all the required the data for the creating deeper windows?
+}
+
+// Button Click Area Start
+
+void GameFrame::OnPlayerDetailsButtonClicked(wxCommandEvent& evt)
+{
+	/*	Lets assume we catch the player we want to see its details.
+		We will create a new window and show the details of the player.
+		I want to show a png Profile Picture of the player. Just near of it, with the big puntos
+			name of the player
+			character name
+			and the race.
+
+		Under the big photos, There will be the additional informations like health zart zurt.
+		And the story of the player. if possible we can make it italic or bold.
+	*/
+	wxMessageBox("Opening details for: " + this->selectedPlayer->getName(), "Player Details", wxOK | wxICON_INFORMATION);
+
+	// Open the details window
+	PlayerDetailsFrame* detailsFrame = new PlayerDetailsFrame(this, this->selectedPlayer);
+	detailsFrame->Show();
+	
 }
 
 void GameFrame::OnLoadButtonClicked(wxCommandEvent& evt)
@@ -195,42 +237,81 @@ void GameFrame::OnLoadButtonClicked(wxCommandEvent& evt)
 	}
 
 	// Set the content to the text editor
-	wxTextCtrl* textEditor = dynamic_cast<wxTextCtrl*>(FindWindowById(wxID_ANY, this));
-	if (textEditor) {
-		textEditor->SetValue(fullText);
+	this->textEditor = dynamic_cast<wxTextCtrl*>(FindWindowById(ID_TextEditor, this));
+	if (this->textEditor) {
+		this->textEditor->SetValue(fullText);
 	}
 	else {
 		wxLogError("Failed to find the text editor.");
 	}
 }
 
-
+// there can be a 2 option to save which one is saving the current editing session or creating a difeerent session object
+// then add it to the sessions folder.
 void GameFrame::OnSaveButtonClicked(wxCommandEvent& evt)
+{
+
+}
+
+void GameFrame::OnNewSessionSaveButtonClicked(wxCommandEvent& evt)
 {
 	wxLogStatus("Save Button Clicked");
 
-	wxString saveFile = wxFileSelector("Save session file", this->SessionsDir, "", "", "Text files (*.txt)|*.txt", wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
-
-	if (!saveFile.IsEmpty())
-	{
-		wxTextCtrl* textEditor = dynamic_cast<wxTextCtrl*>(FindWindowById(wxID_ANY, this));
-		if (!textEditor) {
-			wxLogError("Failed to find the text editor.");
-			return;
-		}
-
-		std::ofstream file(saveFile.ToStdString());
-		if (!file.is_open()) {
-			wxLogError("Failed to open file for writing: %s", saveFile);
-			return;
-		}
-
-		file << textEditor->GetValue().ToStdString();
-		file.close();
-
-		wxLogStatus("Session saved successfully to: %s", saveFile);
+	wxString theTextInTheTextCtrl = this->textEditor->GetValue();
+	std::vector<std::string> sessionText;
+	std::istringstream textStream(theTextInTheTextCtrl.ToStdString());
+	std::string line;
+	while (std::getline(textStream, line)) {
+		sessionText.push_back(line);
 	}
+
+	// Create a new session object
+	Session newSession;
+	newSession.setSessionID(this->Sessions->size() + 1);
+
+	// get the time and date
+	time_t now = time(0);
+	tm* ltm = localtime(&now);
+
+	// create session object to fill the session object
+	newSession.setCreatedDate(std::to_string(1900 + ltm->tm_year) + "/" + std::to_string(1 + ltm->tm_mon) + "/" + std::to_string(ltm->tm_mday));
+	newSession.setLastModifiedDate(std::to_string(1900 + ltm->tm_year) + "/" + std::to_string(1 + ltm->tm_mon) + "/" + std::to_string(ltm->tm_mday));
+	newSession.setSessionText(sessionText);
+
+	// Add the session to the game object
+	this->game->addSession(newSession);
+
+
 }
+
+void GameFrame::OnAddPlayerButtonClicked(wxCommandEvent& evt)
+{
+}
+
+void GameFrame::OnMapButtonClicked(wxCommandEvent& evt) {
+	// reach the directroy of the game files. Find map.png file and show it on a different page
+	// that will not close the Game page.
+
+	/*
+	*The image is in the GameData/<GameFolder>/maps/<name_of_the_map>
+	*For now there are just one map called DnD_Battel_Map.png
+	*/
+
+	// Find the map file
+	std::string mapPath = this->GameDir.ToStdString() + "/maps/DnD_Battle_Map.png";
+	if (!fs::exists(mapPath)) {
+		wxLogError("Map file not found: %s", mapPath);
+		return;
+	}
+
+	// Create a new map frame
+	MapFrame* mapFrame = new MapFrame(this, mapPath);
+	mapFrame->Show();
+
+	// wxLogMessage("Implement this, a problem about byte zart zurt!");
+}
+
+// Button Click Area End
 
 // Implement this and use it for players
 // This will search for the player json files and adds created player objects to the 
