@@ -25,7 +25,7 @@ private:
 	void OnAddPlayerButtonClicked(wxCommandEvent& evt);
 	void OnMapButtonClicked(wxCommandEvent& evt);
 		// Im not sure whether this will work for all player details button
-	void OnPlayerDetailsButtonClicked(wxCommandEvent& evt);
+	void OnPlayerDetailsButtonClicked();
 	void OnLoadButtonClicked(wxCommandEvent& evt);
 	void OnSaveButtonClicked(wxCommandEvent& evt);
 
@@ -79,7 +79,7 @@ private:
 	
 	// Text Editor to handle it on load and save functions
 	wxTextCtrl* textEditor;
-	Player* selectedPlayer;
+	Player* selectedPlayer = nullptr;
 
 };
 

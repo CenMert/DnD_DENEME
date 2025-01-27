@@ -32,6 +32,7 @@ public:
     string getCharacterName() const { return characterName; }
     double getHealth() const { return health; }
     double getBaseAttack() const { return baseAttack; }
+    string getStory() const { return story; }
 
     // setters
     void setName(const string name) { this->name = name; }

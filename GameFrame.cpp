@@ -121,10 +121,15 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		wxBoxSizer* cardSizer = new wxBoxSizer(wxVERTICAL);
 		wxStaticText* playerName = new wxStaticText(
 			playerCard, wxID_ANY, Players->at(i).getName(), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+
 		wxButton* PlayerDetailsButton = new wxButton(
 			playerCard, wxID_ANY, "Details", wxDefaultPosition, PlayerCardButtonSize);
 
-		PlayerDetailsButton->Bind(wxEVT_BUTTON, &GameFrame::OnPlayerDetailsButtonClicked, this);
+		// `Bind` işlemi için lambda fonksiyonu kullanılarak ilgili oyuncu atanıyor
+		PlayerDetailsButton->Bind(wxEVT_BUTTON, [this, i](wxCommandEvent&) {
+			this->selectedPlayer = &this->Players->at(i);
+			OnPlayerDetailsButtonClicked();
+		});
 
 		cardSizer->Add(playerName, 0, wxALIGN_CENTER | wxTOP, 5);
 		cardSizer->Add(PlayerDetailsButton, 0, wxALIGN_CENTER | wxBOTTOM, 5);
@@ -174,25 +179,20 @@ Gamer object operations:
 
 // Button Click Area Start
 
-void GameFrame::OnPlayerDetailsButtonClicked(wxCommandEvent& evt)
+void GameFrame::OnPlayerDetailsButtonClicked()
 {
-	/*	Lets assume we catch the player we want to see its details.
-		We will create a new window and show the details of the player.
-		I want to show a png Profile Picture of the player. Just near of it, with the big puntos
-			name of the player
-			character name
-			and the race.
+	if (selectedPlayer == nullptr) {
+		wxMessageBox("No player selected!", "Error", wxOK | wxICON_ERROR);
+		return;
+	}
 
-		Under the big photos, There will be the additional informations like health zart zurt.
-		And the story of the player. if possible we can make it italic or bold.
-	*/
-	wxMessageBox("Opening details for: " + this->selectedPlayer->getName(), "Player Details", wxOK | wxICON_INFORMATION);
+	// wxMessageBox("Opening details for: " + selectedPlayer->getName(), "Player Details", wxOK | wxICON_INFORMATION);
 
-	// Open the details window
-	PlayerDetailsFrame* detailsFrame = new PlayerDetailsFrame(this, this->selectedPlayer);
+	// Oyuncu detayları penceresini aç
+	PlayerDetailsFrame* detailsFrame = new PlayerDetailsFrame(this, selectedPlayer);
 	detailsFrame->Show();
-	
 }
+
 
 void GameFrame::OnLoadButtonClicked(wxCommandEvent& evt)
 {
