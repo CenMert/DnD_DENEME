@@ -11,6 +11,11 @@
 #include <vector>
 #include <sstream>
 
+#include <wx/wx.h>
+#include <wx/filedlg.h>
+#include <wx/statbmp.h>
+#include <wx/image.h>
+
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 
@@ -288,28 +293,54 @@ void GameFrame::OnAddPlayerButtonClicked(wxCommandEvent& evt)
 {
 }
 
-void GameFrame::OnMapButtonClicked(wxCommandEvent& evt) {
-	// reach the directroy of the game files. Find map.png file and show it on a different page
-	// that will not close the Game page.
 
-	/*
-	*The image is in the GameData/<GameFolder>/maps/<name_of_the_map>
-	*For now there are just one map called DnD_Battel_Map.png
-	*/
+void GameFrame::OnMapButtonClicked(wxCommandEvent& evt)
+{
+	// Ensure PNG support is initialized
+	wxImage::AddHandler(new wxPNGHandler());
 
-	// Find the map file
-	std::string mapPath = this->GameDir.ToStdString() + "/maps/DnD_Battle_Map.png";
-	if (!fs::exists(mapPath)) {
-		wxLogError("Map file not found: %s", mapPath);
-		return;
+	// Open a file dialog to choose a PNG file
+	wxFileDialog openFileDialog(this, _("Open PNG file"), "", "",
+		"PNG files (*.png)|*.png",
+		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+
+	// If the user selects a file
+	if (openFileDialog.ShowModal() == wxID_OK)
+	{
+		// Get the path of the selected file
+		wxString filePath = openFileDialog.GetPath();
+
+		// Debug: Show the selected file path
+		wxMessageBox("Selected File: " + filePath, "Debug", wxOK | wxICON_INFORMATION);
+
+		// Load the image
+		wxImage image;
+		if (!image.LoadFile(filePath, wxBITMAP_TYPE_PNG))
+		{
+			wxMessageBox("Failed to load the image.", "Error", wxOK | wxICON_ERROR);
+			return;
+		}
+
+		// Convert the image to a bitmap
+		wxBitmap bitmap(image);
+
+		if (m_mapImagePanel)
+		{
+			m_mapImagePanel->DestroyChildren(); // Clear previous content
+
+			// Create a static bitmap to display the image
+			wxStaticBitmap* staticBitmap = new wxStaticBitmap(m_mapImagePanel, wxID_ANY, bitmap);
+
+			// Resize it to fit the panel
+			staticBitmap->SetSize(m_mapImagePanel->GetClientSize());
+
+			// Force a layout update
+			m_mapImagePanel->Layout();
+		}
 	}
-
-	// Create a new map frame
-	MapFrame* mapFrame = new MapFrame(this, mapPath);
-	mapFrame->Show();
-
-	// wxLogMessage("Implement this, a problem about byte zart zurt!");
 }
+
+
 
 // Button Click Area End
 

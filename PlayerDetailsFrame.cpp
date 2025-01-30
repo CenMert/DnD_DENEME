@@ -38,6 +38,7 @@ PlayerDetailsFrame::PlayerDetailsFrame(wxWindow* parent, Player* player)
 	// Panelin sizer'ýný ayarlayalým
 	mainPanel->SetSizer(mainSizer);
 
+
 	// Ana Frame'e paneli ekleyelim
 	this->SetClientSize(mainPanel->GetSize());
 

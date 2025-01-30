@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="BaseDice.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="GameFrame.h" />
     <ClInclude Include="json.hpp" />

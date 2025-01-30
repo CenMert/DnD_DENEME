@@ -80,6 +80,6 @@ private:
 	// Text Editor to handle it on load and save functions
 	wxTextCtrl* textEditor;
 	Player* selectedPlayer = nullptr;
-
+	wxPanel* m_mapImagePanel;
 };
 
