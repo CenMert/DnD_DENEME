@@ -3,7 +3,7 @@
 
 // Constructor for MapFrame
 MapFrame::MapFrame(wxWindow* parent, wxString ImageName)
-    : wxFrame(parent, wxID_ANY, "Map Window", wxDefaultPosition, wxSize(800, 600)),
+    : wxFrame(parent, wxID_ANY, "Map Window", wxDefaultPosition, wxSize(800, 600)), // Set fixed size (800x600)
     ImageName(ImageName)
 {
     // Ensure PNG support is initialized
@@ -22,15 +22,27 @@ MapFrame::MapFrame(wxWindow* parent, wxString ImageName)
         wxImage image;
         if (image.LoadFile(ImageName, wxBITMAP_TYPE_PNG))
         {
+            // Scale the image to fit the frame size while maintaining aspect ratio
+            int frameWidth = 800;  // Width of the MapFrame
+            int frameHeight = 600; // Height of the MapFrame
+
+            // Calculate scaling factor
+            double scaleWidth = (double)frameWidth / image.GetWidth();
+            double scaleHeight = (double)frameHeight / image.GetHeight();
+            double scaleFactor = std::min(scaleWidth, scaleHeight);
+
+            // Resize the image
+            int newWidth = image.GetWidth() * scaleFactor;
+            int newHeight = image.GetHeight() * scaleFactor;
+            image.Rescale(newWidth, newHeight, wxIMAGE_QUALITY_HIGH);
+
+            // Convert the resized image to a bitmap
             wxBitmap bitmap(image);
 
             // Create a static bitmap to display the image
             wxStaticBitmap* staticBitmap = new wxStaticBitmap(ImagePanel, wxID_ANY, bitmap);
 
-            // Adjust size to fit the panel
-            staticBitmap->SetSize(ImagePanel->GetClientSize());
-
-            // Add to sizer
+            // Add to sizer with expansion
             ImageSizer->Add(staticBitmap, 1, wxEXPAND | wxALL, 5);
         }
         else
@@ -42,8 +54,8 @@ MapFrame::MapFrame(wxWindow* parent, wxString ImageName)
     // Set sizer for panel
     ImagePanel->SetSizer(ImageSizer);
 
-    // Set sizer for the frame
-    this->SetSizerAndFit(ImageSizer);
+    // Fit the frame to the contents
+    this->Fit();
 }
 
 MapFrame::~MapFrame() { ; }

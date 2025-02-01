@@ -7,7 +7,6 @@
 #include "session.h"
 #include "BaseDice.h"
 #include "Dice.h"
-
 using namespace std;
 /*
 A game class that will be used to hold the all information about the current game.
@@ -62,9 +61,11 @@ public:
     void addSession(const Session& s) { sessions->push_back(s); }
 
     //implemented in .cpp file
-    void saveGame();
-    void loadGame();
+    void saveGame(std::string PlayersDir, std::string SessionsDir);
 
+    // Extra
+    void writeStoryToFile(const std::string& filename, const std::string& content);
+    std::string getCurrentTimeISO8601();
 private:
     std::string gameName;
     std::shared_ptr < vector< BaseDice  > >    dices; 

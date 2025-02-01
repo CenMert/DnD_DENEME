@@ -29,7 +29,8 @@ enum Game_IDs {
 	ID_LoadButton = 7,
 	ID_TextEditor = 8,
 
-	ID_SaveForNewSessionButton = 9
+	ID_SaveForNewSessionButton = 9,
+	ID_SaveForCurrentSessionButton = 10
 };
 
 // Color and size settings
@@ -74,18 +75,21 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	wxButton* SaveButton = new wxButton(SidePanelButton, ID_SaveButton, "Save", wxDefaultPosition, SidePanelButtonSize);
 	wxButton* LoadButton = new wxButton(SidePanelButton, ID_LoadButton, "Load", wxDefaultPosition, SidePanelButtonSize);
 	wxButton* SaveForNewSessionButton = new wxButton(SidePanelButton, ID_SaveForNewSessionButton, "Save for\nnew Session", wxDefaultPosition, wxSize(100, 35));
+	wxButton* SaveForCurrentSessionButton = new wxButton(SidePanelButton, ID_SaveForCurrentSessionButton, "Save for\ncurrent Session", wxDefaultPosition, wxSize(100, 35));
 
 	leftSizer->Add(MapButton, 0, wxEXPAND | wxALL, 5);
 	leftSizer->Add(AddPlayerButton, 0, wxEXPAND | wxALL, 5);
 	leftSizer->Add(SaveButton, 0, wxEXPAND | wxALL, 5);
 	leftSizer->Add(LoadButton, 0, wxEXPAND | wxALL, 5);
 	leftSizer->Add(SaveForNewSessionButton, 0, wxEXPAND | wxALL, 5);
+	leftSizer->Add(SaveForCurrentSessionButton, 0, wxEXPAND | wxALL, 5);
 
 	MapButton->SetBackgroundColour(buttonColour);
 	AddPlayerButton->SetBackgroundColour(buttonColour);
 	SaveButton->SetBackgroundColour(buttonColour);
 	LoadButton->SetBackgroundColour(buttonColour);
 	SaveForNewSessionButton->SetBackgroundColour(buttonColour);
+	SaveForCurrentSessionButton->SetBackgroundColour(buttonColour);
 
 	SidePanelButton->SetSizer(leftSizer);
 	contentSizer->Add(SidePanelButton, 0, wxEXPAND | wxALL, 5);
@@ -146,6 +150,8 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	LoadButton->Bind(wxEVT_BUTTON, &GameFrame::OnLoadButtonClicked, this);
 	SaveButton->Bind(wxEVT_BUTTON, &GameFrame::OnSaveButtonClicked, this);
 	MapButton->Bind(wxEVT_BUTTON, &GameFrame::OnMapButtonClicked, this);
+	SaveForNewSessionButton->Bind(wxEVT_BUTTON, &GameFrame::OnNewSessionSaveButtonClicked, this);
+
 
 	PlayerCardPanel->SetSizer(playerSizer);
 	contentSizer->Add(PlayerCardPanel, 0, wxEXPAND | wxALL, 5);
@@ -255,7 +261,8 @@ void GameFrame::OnLoadButtonClicked(wxCommandEvent& evt)
 // then add it to the sessions folder.
 void GameFrame::OnSaveButtonClicked(wxCommandEvent& evt)
 {
-
+	wxLogMessage("Game saved!");
+	this->game->saveGame(this->PlayersDir.ToStdString(), this->SessionsDir.ToStdString());
 }
 
 void GameFrame::OnNewSessionSaveButtonClicked(wxCommandEvent& evt)
@@ -311,32 +318,11 @@ void GameFrame::OnMapButtonClicked(wxCommandEvent& evt)
 		wxString filePath = openFileDialog.GetPath();
 
 		// Debug: Show the selected file path
-		wxMessageBox("Selected File: " + filePath, "Debug", wxOK | wxICON_INFORMATION);
+		// wxMessageBox("Selected File: " + filePath, "Debug", wxOK | wxICON_INFORMATION);
 
-		// Load the image
-		wxImage image;
-		if (!image.LoadFile(filePath, wxBITMAP_TYPE_PNG))
-		{
-			wxMessageBox("Failed to load the image.", "Error", wxOK | wxICON_ERROR);
-			return;
-		}
-
-		// Convert the image to a bitmap
-		wxBitmap bitmap(image);
-
-		if (m_mapImagePanel)
-		{
-			m_mapImagePanel->DestroyChildren(); // Clear previous content
-
-			// Create a static bitmap to display the image
-			wxStaticBitmap* staticBitmap = new wxStaticBitmap(m_mapImagePanel, wxID_ANY, bitmap);
-
-			// Resize it to fit the panel
-			staticBitmap->SetSize(m_mapImagePanel->GetClientSize());
-
-			// Force a layout update
-			m_mapImagePanel->Layout();
-		}
+		// Create a new MapFrame to display the selected image
+		MapFrame* mapFrame = new MapFrame(this, filePath);
+		mapFrame->Show(true);
 	}
 }
 

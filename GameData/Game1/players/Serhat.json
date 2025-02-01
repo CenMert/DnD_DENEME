@@ -1,7 +1,7 @@
 {
-    "name": "Serhat",
+    "baseAttack": 15.0,
     "characterName": "Serhat the Brave",
     "health": 120.0,
-    "baseAttack": 15.0,
-	"story": "Ne desen bu karakterin yanına az kalacaktır, izle ve gör."
+    "name": "Serhat",
+    "story": "Ne desen bu karakterin yanına az kalacaktır, izle ve gör."
 }

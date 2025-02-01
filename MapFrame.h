@@ -9,9 +9,9 @@
 class MapFrame : public wxFrame
 {
 public:
-	MapFrame(wxWindow* parent, wxString ImageName);
-	~MapFrame();
-private:
-	wxString ImageName;
-};
+    MapFrame(wxWindow* parent, wxString ImageName);
+    ~MapFrame();
 
+private:
+    wxString ImageName;
+};
