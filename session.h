@@ -1,48 +1,51 @@
-#pragma once
+#ifndef SESSION_H
+#define SESSION_H
+
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "player.h"
-
-#define _CRT_SECURE_NO_WARNINGS
-
-using namespace std;
+#include <fstream>
+#include <filesystem>
+#include "json.hpp" // Include nlohmann/json
 
 class Session {
 public:
-    //BIG3
-    Session(string sessionName, string sessionCreatedDate, vector<string> sessionText) : sessionName(sessionName), sessionCreatedDate(sessionCreatedDate), sessionText(sessionText) {}
-    Session() {};
-    ~Session() {}
-    Session operator=(const Session& s) {
-        sessionName = s.sessionName;
-        sessionCreatedDate = s.sessionCreatedDate;
-        sessionText = s.sessionText;
-        return *this;
-    }
+    // Constructors and Destructor
+    Session(std::string sessionName, std::string sessionCreatedDate, std::vector<std::string> sessionText);
+    Session();
+    ~Session();
 
-    // getters
-    int getSessionID() const { return sessionID; }
-    string getSessionName() const { return sessionName; }
-    string getSessionDate() const { return sessionCreatedDate; }
-    vector<string> getSessionText() const { return sessionText; }
+    // Operator Overloading
+    Session& operator=(const Session& s);
 
-    // setters
-    void setSessionID(const int id) { sessionID = id; }
-    void setCreatedDate(const std::string& date) { sessionCreatedDate = date; }
-    void setLastModifiedDate(const std::string& date) { sessionLastModifiedDate = date; }
-    void setSessionText(const std::vector<std::string>& text) { sessionText = text; }
+    // Getters
+    int getSessionID() const;
+    std::string getSessionName() const;
+    std::string getSessionDate() const;
+    std::string getCreatedDate() const;
+    std::string getLastModifiedDate() const;
+    std::vector<std::string> getSessionText() const;
 
+    // Setters
+    void setSessionID(const int id);
+    void setCreatedDate(const std::string& date);
+    void setLastModifiedDate(const std::string& date);
+    void setSessionText(const std::vector<std::string>& text);
 
-    // other functions
-    void recplaceSessionText(vector<string> newText) { this->sessionText = newText; }
-    void addSessionText(string newText) { this->sessionText.push_back(newText) ; }
+    // File Handling Functions
+    bool saveToJsonFile(const std::string& directory) const;
+    bool loadFromJsonFile(const std::string& filePath);
+
+    // Other Functions
+    void replaceSessionText(std::vector<std::string> newText);
+    void addSessionText(std::string newText);
 
 private:
-    int sessionID; // this will be used to identify the session
-    string sessionName;
-    string sessionCreatedDate;
-    string sessionLastModifiedDate;
-    std::vector<std::string> sessionText; // this is the text what had happended in the session
+    int sessionID; // Unique session identifier
+    std::string sessionName;
+    std::string sessionCreatedDate;
+    std::string sessionLastModifiedDate;
+    std::vector<std::string> sessionText; // Session text logs
 };
+
+#endif

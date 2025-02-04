@@ -1,13 +1,27 @@
-#pragma once
+#ifndef GAME_H
+#define GAME_H
+
 #include <string>
 #include <vector>
 #include <iostream>
 
-#include "player.h"
-#include "session.h"
+#include "Player.h"
+#include "Session.h"
 #include "BaseDice.h"
 #include "Dice.h"
+#include <fstream>
+#include <filesystem>
+#include "json.hpp"
+
+// For time operations
+#include <iomanip>
+#include <chrono>
+#include <ctime>
+#include <cctype>
+
 using namespace std;
+using json = nlohmann::json;
+
 /*
 A game class that will be used to hold the all information about the current game.
 This class will hold all the players and sessions.
@@ -78,3 +92,4 @@ private:
 
 };
 
+#endif

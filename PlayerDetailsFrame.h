@@ -1,6 +1,6 @@
 #pragma once
 #include <wx/wx.h>
-#include "player.h"
+#include "Player.h"
 
 class PlayerDetailsFrame : public wxFrame
 {

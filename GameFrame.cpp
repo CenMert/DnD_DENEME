@@ -1,8 +1,8 @@
 ﻿#include "GameFrame.h"
 #include "MapFrame.h"
 #include "PlayerDetailsFrame.h"
-#include "player.h"
-#include "session.h"
+#include "Player.h"
+#include "Session.h"
 #include "json.hpp"
 
 #include <filesystem>
@@ -207,6 +207,8 @@ void GameFrame::OnPlayerDetailsButtonClicked()
 
 void GameFrame::OnLoadButtonClicked(wxCommandEvent& evt)
 {
+
+
 	wxLogStatus("Load Button Clicked");
 
 	if (this->Sessions->empty()) {
@@ -239,6 +241,8 @@ void GameFrame::OnLoadButtonClicked(wxCommandEvent& evt)
 		wxLogError("Failed to find the selected session.");
 		return;
 	}
+
+	this->currentSession = &(*it);
 
 	// Get session text
 	std::vector<std::string> sessionText = it->getSessionText();
@@ -437,4 +441,69 @@ void GameFrame::extractSessionsFromFolder() {
 			}
 		}
 	}
+}
+
+void GameFrame::OnSaveForCurrentSessionButtonClicked(wxCommandEvent& evt)
+{
+	// Ensure a session is currently loaded
+	if (this->currentSession == nullptr) {
+		wxLogError("No session is currently loaded. Please load a session to save changes.");
+		return;
+	}
+
+	// Retrieve the current text from the text editor
+	wxString textValue = this->textEditor->GetValue();
+	std::vector<std::string> sessionText;
+	std::istringstream iss(textValue.ToStdString());
+	std::string line;
+	while (std::getline(iss, line)) {
+		sessionText.push_back(line);
+	}
+
+	// Update the session's text data
+	this->currentSession->setSessionText(sessionText);
+
+	// Update the session's last modified date to the current date
+	time_t now = time(0);
+	tm* ltm = localtime(&now);
+	std::string modifiedDate = std::to_string(1900 + ltm->tm_year) + "/" +
+		std::to_string(1 + ltm->tm_mon) + "/" +
+		std::to_string(ltm->tm_mday);
+	this->currentSession->setLastModifiedDate(modifiedDate);
+
+	// Build file names and paths for saving
+	int sessionID = this->currentSession->getSessionID();
+	std::string sessionJSONFileName = "Session_" + std::to_string(sessionID) + ".json";
+	std::string sessionJSONFilePath = this->SessionsDir.ToStdString() + "/" + sessionJSONFileName;
+	std::string sessionTextFileName = "Session_" + std::to_string(sessionID) + "_text.txt";
+	std::string sessionTextFilePath = this->SessionsDir.ToStdString() + "/" + sessionTextFileName;
+
+	// Create the JSON object for the session
+	json sessionJson;
+	sessionJson["sessionID"] = sessionID;
+	sessionJson["sessionCreatedDate"] = this->currentSession->getCreatedDate();
+	sessionJson["sessionLastModifiedDate"] = this->currentSession->getLastModifiedDate();
+	sessionJson["sessionTextFile"] = sessionTextFileName;
+
+	// Write the session text to its text file
+	std::ofstream textFile(sessionTextFilePath);
+	if (!textFile.is_open()) {
+		wxLogError("Failed to open session text file for writing: %s", sessionTextFilePath);
+		return;
+	}
+	for (const auto& ln : sessionText) {
+		textFile << ln << std::endl;
+	}
+	textFile.close();
+
+	// Write the session JSON to its file
+	std::ofstream jsonFile(sessionJSONFilePath);
+	if (!jsonFile.is_open()) {
+		wxLogError("Failed to open session JSON file for writing: %s", sessionJSONFilePath);
+		return;
+	}
+	jsonFile << sessionJson.dump(4);  // Pretty-print JSON with indent of 4 spaces
+	jsonFile.close();
+
+	wxLogMessage("Current session (ID %d) saved successfully.", sessionID);
 }

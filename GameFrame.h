@@ -1,8 +1,8 @@
 #pragma once
 #include "PlayFrame.h"
-#include "game.h"
-#include "player.h"
-#include "session.h"
+#include "Game.h"
+#include "Player.h"
+#include "Session.h"
 
 #include <string>
 #include <wx/wx.h>
@@ -28,7 +28,7 @@ private:
 	void OnPlayerDetailsButtonClicked();
 	void OnLoadButtonClicked(wxCommandEvent& evt);
 	void OnSaveButtonClicked(wxCommandEvent& evt);
-
+	void OnSaveForCurrentSessionButtonClicked(wxCommandEvent& evt);
 	void OnNewSessionSaveButtonClicked(wxCommandEvent& evt);
 
 	// setters
@@ -81,5 +81,6 @@ private:
 	wxTextCtrl* textEditor;
 	Player* selectedPlayer = nullptr;
 	wxPanel* m_mapImagePanel;
+	Session* currentSession = nullptr;
 };
 

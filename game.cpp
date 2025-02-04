@@ -1,16 +1,5 @@
 #include "game.h"
-#include <fstream>
-#include <filesystem>
-#include "json.hpp"
 
-// For time operations
-#include <iomanip>
-#include <chrono>
-#include <ctime>
-#include <cctype>
-
-using namespace std;
-using json = nlohmann::json;
 
 // Helper function to sanitize filenames
 std::string sanitizeFilename(const std::string& input) {
