@@ -11,7 +11,14 @@
 class Session {
 public:
     // Constructors and Destructor
-    Session(std::string sessionName, std::string sessionCreatedDate, std::vector<std::string> sessionText);
+    Session(
+        int sessionID,
+        std::string sessionName,
+        std::string sessionCreatedDate,
+        std::string sessionLastModifiedDate,
+        std::string sessionTextFile,
+        std::vector < std::string > sessionText
+        );
     Session();
     ~Session();
 
@@ -19,12 +26,12 @@ public:
     Session& operator=(const Session& s);
 
     // Getters
-    int getSessionID() const;
-    std::string getSessionName() const;
-    std::string getSessionDate() const;
-    std::string getCreatedDate() const;
-    std::string getLastModifiedDate() const;
-    std::vector<std::string> getSessionText() const;
+    int getSessionID() const { return this->sessionID; }
+    std::string getSessionName() const { return this->sessionName; }
+    std::string getSessionCreatedDate() const { return this->sessionCreatedDate; }
+    std::string getSessionLastModifiedDate() const { return this->sessionLastModifiedDate; }
+    std::string getSessionTextFile() const { return this->sessionTextFile; }
+    std::vector<std::string> getSessionText() const { return this->sessionText; }
 
     // Setters
     void setSessionID(const int id);
@@ -32,19 +39,18 @@ public:
     void setLastModifiedDate(const std::string& date);
     void setSessionText(const std::vector<std::string>& text);
 
-    // File Handling Functions
-    bool saveToJsonFile(const std::string& directory) const;
-    bool loadFromJsonFile(const std::string& filePath);
-
     // Other Functions
     void replaceSessionText(std::vector<std::string> newText);
     void addSessionText(std::string newText);
+
+    void display() const;
 
 private:
     int sessionID; // Unique session identifier
     std::string sessionName;
     std::string sessionCreatedDate;
     std::string sessionLastModifiedDate;
+    std::string sessionTextFile;
     std::vector<std::string> sessionText; // Session text logs
 };
 

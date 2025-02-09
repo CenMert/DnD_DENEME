@@ -147,7 +147,7 @@
     <ClInclude Include="BaseDice.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameFrame.h" />
-    <ClInclude Include="GameManage.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="MainMenuFrame.h" />
     <ClInclude Include="MapFrame.h" />
@@ -162,7 +162,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameFrame.cpp" />
-    <ClCompile Include="GameManage.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="MainMenuFrame.cpp" />
     <ClCompile Include="MapFrame.cpp" />
     <ClCompile Include="Player.cpp" />

@@ -1,20 +1,5 @@
 ﻿#include "GameFrame.h"
-#include "MapFrame.h"
-#include "PlayerDetailsFrame.h"
-#include "Player.h"
-#include "Session.h"
-#include "json.hpp"
 
-#include <filesystem>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <sstream>
-
-#include <wx/wx.h>
-#include <wx/filedlg.h>
-#include <wx/statbmp.h>
-#include <wx/image.h>
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
@@ -34,137 +19,138 @@ enum Game_IDs {
 };
 
 // Color and size settings
-wxColour buttonColour = wxColour(166, 85, 28);
-wxColour backgroundColour = wxColour(204, 147, 114);
-wxColour playerCardBGColour = wxColour(227, 208, 61);
+wxColour buttonColour(wxT("#A6551C"));
+wxColour backgroundColour(wxT("#CC9372"));
+wxColour playerCardBGColour(wxT("#E3D83D"));
 wxSize SidePanelButtonSize = wxSize(100, 25);
 wxSize DynamicTextSize = wxSize(600, 400);
 wxSize PlayerCardSize = wxSize(200, 100);
 wxSize PlayerCardButtonSize = wxSize(80, 25);
 
+// Button spaces
+enum buttons_constants {
+	vertical_space = 5,
+	horizontal_space = 5
+};
+
 GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	: wxFrame(parent, wxID_ANY, "The Game", wxDefaultPosition, wxSize(1280, 720)),
-	game(std::make_shared<Game>(GameFolder.ToStdString()))
+	GM(std::make_shared<GameManager>(GameFolder.ToStdString()))
 {
-	setGameFolder(GameFolder);
-	setGameDirectory("GameData/" + GameFolder.ToStdString());
-	setPlayersDirectory();
-	setSessionsDirectory();
 
-	wxPanel* gamePanel = new wxPanel(this);
-	gamePanel->SetBackgroundColour(backgroundColour);
+	wxFont oldFont = wxFont(wxString(fontStyle));
+	// the icon operation that appears at the top of the window with its header.
+	wxIcon appIcon;
+	if (appIcon.LoadFile("game_icon.ico", wxBITMAP_TYPE_ICO)) { SetIcon(appIcon); }
+	else { wxLogError("Icon File couldn't added to window."); }
 
-	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+	// we have set the game.
+	GM->setGame(GameFolder.ToStdString());
+	
+	// initialize the datas
+	GM->loadGame();
+	wxMessageBox("Game: " + GameFolder + " is loaded.");
 
-	// Header
-	wxStaticText* topHeader = new wxStaticText(gamePanel, ID_TopHeader, "Game Panel: " + GameFolder, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-	wxFont oldFont(18, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
-	topHeader->SetFont(oldFont);
-	mainSizer->Add(topHeader, 0, wxALIGN_CENTER | wxTOP, 10);
+	wxPanel* MainPanel = new wxPanel(this, wxID_ANY);
+	wxBoxSizer * MainSizer = new wxBoxSizer(wxHORIZONTAL);
 
-	wxBoxSizer* contentSizer = new wxBoxSizer(wxHORIZONTAL);
+	/** Here is the button consturction area. */
+	// initializing side buttons
+		wxPanel* SideButtonPanel = new wxPanel(MainPanel, wxID_ANY);
+		wxBoxSizer* SBP_Sizer = new wxBoxSizer(wxVERTICAL); // to adjust vertical
 
-	// Left Panel (Buttons)
-	wxPanel* SidePanelButton = new wxPanel(gamePanel);
-	SidePanelButton->SetMinSize(wxSize(100, 400));
-	SidePanelButton->SetBackgroundColour(backgroundColour);
+		wxButton* MapButton = new wxButton(SideButtonPanel, wxID_ANY, "Map");
+		wxButton* SaveButton = new wxButton(SideButtonPanel, wxID_ANY, "Save");
+		wxButton* LoadButton = new wxButton(SideButtonPanel, wxID_ANY, "Load");
+		wxButton* SaveForNewSessionButton = new wxButton(SideButtonPanel, wxID_ANY, "Save For\nNew Session");
 
-	wxBoxSizer* leftSizer = new wxBoxSizer(wxVERTICAL);
-	wxButton* MapButton = new wxButton(SidePanelButton, ID_MapButton, "Map", wxDefaultPosition, SidePanelButtonSize);
-	wxButton* AddPlayerButton = new wxButton(SidePanelButton, ID_AddPlayerButton, "+Player", wxDefaultPosition, SidePanelButtonSize);
-	wxButton* SaveButton = new wxButton(SidePanelButton, ID_SaveButton, "Save", wxDefaultPosition, SidePanelButtonSize);
-	wxButton* LoadButton = new wxButton(SidePanelButton, ID_LoadButton, "Load", wxDefaultPosition, SidePanelButtonSize);
-	wxButton* SaveForNewSessionButton = new wxButton(SidePanelButton, ID_SaveForNewSessionButton, "Save for\nnew Session", wxDefaultPosition, wxSize(100, 35));
-	wxButton* SaveForCurrentSessionButton = new wxButton(SidePanelButton, ID_SaveForCurrentSessionButton, "Save for\ncurrent Session", wxDefaultPosition, wxSize(100, 35));
+		SBP_Sizer->Add(MapButton, 0, wxALL, vertical_space);
+		SBP_Sizer->Add(SaveButton, 0, wxALL, vertical_space);
+		SBP_Sizer->Add(LoadButton, 0, wxALL, vertical_space);
+		SBP_Sizer->Add(SaveForNewSessionButton, 0, wxALL, vertical_space);
 
-	leftSizer->Add(MapButton, 0, wxEXPAND | wxALL, 5);
-	leftSizer->Add(AddPlayerButton, 0, wxEXPAND | wxALL, 5);
-	leftSizer->Add(SaveButton, 0, wxEXPAND | wxALL, 5);
-	leftSizer->Add(LoadButton, 0, wxEXPAND | wxALL, 5);
-	leftSizer->Add(SaveForNewSessionButton, 0, wxEXPAND | wxALL, 5);
-	leftSizer->Add(SaveForCurrentSessionButton, 0, wxEXPAND | wxALL, 5);
-
-	MapButton->SetBackgroundColour(buttonColour);
-	AddPlayerButton->SetBackgroundColour(buttonColour);
-	SaveButton->SetBackgroundColour(buttonColour);
-	LoadButton->SetBackgroundColour(buttonColour);
-	SaveForNewSessionButton->SetBackgroundColour(buttonColour);
-	SaveForCurrentSessionButton->SetBackgroundColour(buttonColour);
-
-	SidePanelButton->SetSizer(leftSizer);
-	contentSizer->Add(SidePanelButton, 0, wxEXPAND | wxALL, 5);
-
-	// Center Panel (Text Editor)
-	wxPanel* DynamicTextPanel = new wxPanel(gamePanel);
-	DynamicTextPanel->SetMinSize(DynamicTextSize);
-	DynamicTextPanel->SetBackgroundColour(backgroundColour);
-
-	wxBoxSizer* CenterSizer = new wxBoxSizer(wxVERTICAL);
-	this->textEditor = new wxTextCtrl(DynamicTextPanel, ID_TextEditor, "", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-	this->textEditor->SetBackgroundColour(*wxBLACK);
-	this->textEditor->SetForegroundColour(*wxWHITE);
-
-	CenterSizer->Add(this->textEditor, 1, wxEXPAND | wxALL, 5);
-	DynamicTextPanel->SetSizer(CenterSizer);
-	contentSizer->Add(DynamicTextPanel, 1, wxEXPAND | wxALL, 5);
-
-	// Right Panel (Player Cards with Scroll)
-	wxScrolledWindow* PlayerCardPanel = new wxScrolledWindow(gamePanel, wxID_ANY, wxDefaultPosition, wxSize(200, 400), wxVSCROLL);
-	PlayerCardPanel->SetScrollRate(5, 5);
-	wxBoxSizer* playerSizer = new wxBoxSizer(wxVERTICAL);
-
-	extractPlayersFromFolder();
-	extractSessionsFromFolder();
-
-	this->Players = game->getPlayers();
-	this->Sessions = game->getSessions();
-
-	size_t playersLen = Players->size();
-
-	// Sample players (Replace with dynamic loading)
-	for (size_t i = 0; i < playersLen; i++) {
-		wxPanel* playerCard = new wxPanel(PlayerCardPanel);
-		playerCard->SetMinSize(PlayerCardSize);
-		playerCard->SetBackgroundColour(playerCardBGColour);
-
-		wxBoxSizer* cardSizer = new wxBoxSizer(wxVERTICAL);
-		wxStaticText* playerName = new wxStaticText(
-			playerCard, wxID_ANY, Players->at(i).getName(), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-
-		wxButton* PlayerDetailsButton = new wxButton(
-			playerCard, wxID_ANY, "Details", wxDefaultPosition, PlayerCardButtonSize);
-
-		// `Bind` işlemi için lambda fonksiyonu kullanılarak ilgili oyuncu atanıyor
-		PlayerDetailsButton->Bind(wxEVT_BUTTON, [this, i](wxCommandEvent&) {
-			this->selectedPlayer = &this->Players->at(i);
-			OnPlayerDetailsButtonClicked();
-		});
-
-		cardSizer->Add(playerName, 0, wxALIGN_CENTER | wxTOP, 5);
-		cardSizer->Add(PlayerDetailsButton, 0, wxALIGN_CENTER | wxBOTTOM, 5);
-		playerCard->SetSizer(cardSizer);
-		playerSizer->Add(playerCard, 0, wxEXPAND | wxALL, 5);
-	}
-
-	// Button binding for left side panel.
-	LoadButton->Bind(wxEVT_BUTTON, &GameFrame::OnLoadButtonClicked, this);
-	SaveButton->Bind(wxEVT_BUTTON, &GameFrame::OnSaveButtonClicked, this);
-	MapButton->Bind(wxEVT_BUTTON, &GameFrame::OnMapButtonClicked, this);
-	SaveForNewSessionButton->Bind(wxEVT_BUTTON, &GameFrame::OnNewSessionSaveButtonClicked, this);
+		
+		SaveButton->Bind(wxEVT_BUTTON, &GameFrame::saveBC, this);
+		MapButton->Bind(wxEVT_BUTTON, &GameFrame::On_Map_ButtonClicked, this);
+		LoadButton->Bind(wxEVT_BUTTON, &GameFrame::On_Load_ButtonClicked, this);
+		SaveForNewSessionButton->Bind(wxEVT_BUTTON, &GameFrame::On_SaveForNewSession_ButtonClicked, this);
+		
 
 
-	PlayerCardPanel->SetSizer(playerSizer);
-	contentSizer->Add(PlayerCardPanel, 0, wxEXPAND | wxALL, 5);
+		SideButtonPanel->SetSizer(SBP_Sizer);
+	// side button adjustmen end.
 
-	mainSizer->Add(contentSizer, 1, wxEXPAND | wxALL, 5);
-	gamePanel->SetSizer(mainSizer);
+	// Left Player cards panel
+
+		wxPanel* PlayerCardPanel = new wxPanel(MainPanel, wxID_ANY);
+		wxBoxSizer* PCP_Sizer = new wxBoxSizer(wxVERTICAL);
+
+		/*
+		get all the players 
+		create a panel for each of them
+		adjust that panel with the information from player
+		then add it to the PlayerCardPanel
+		*/
+		for (auto& [name, player] : *this->GM->getGame()->getPlayers()) {
+			wxPanel* player_specific_panel = new wxPanel(
+				PlayerCardPanel, wxID_ANY, wxDefaultPosition, wxSize(200, 100), wxBORDER_SIMPLE);
+			wxBoxSizer* psp_sizer = new wxBoxSizer(wxVERTICAL);
+
+			// adjustment
+			player_specific_panel->SetBackgroundColour(backgroundColour);
+			// end adjustment
+
+			wxStaticText* player_static_txt = new wxStaticText(player_specific_panel, wxID_ANY,
+				player.getName());
+			wxButton* player_detail_button = new wxButton(player_specific_panel, wxID_ANY, "Details");
+			player_detail_button->Bind(wxEVT_BUTTON, [this, &player](wxCommandEvent& event) {
+				// 'player' artık ilgili oyuncu nesnesini temsil ediyor.
+				this->On_Details_ButtonClicked(player, event);
+			});
+
+			psp_sizer->Add(player_static_txt, 0, wxALIGN_CENTER | wxALL, vertical_space);
+			psp_sizer->Add(player_detail_button, 0, wxALIGN_CENTER | wxALL, vertical_space);
+			psp_sizer->AddStretchSpacer(1);
+			player_specific_panel->SetSizer(psp_sizer);
+
+			PCP_Sizer->Add(player_specific_panel, vertical_space);
+		}
+
+		PlayerCardPanel->SetSizer(PCP_Sizer);
+
+
+	// player card panel ends
+
+	// middle text control panel
+
+		wxPanel* TextCtrlPanel = new wxPanel(MainPanel, wxID_ANY);
+		wxBoxSizer* TCP_Sizer = new wxBoxSizer(wxVERTICAL);
+		
+		this->Content = new wxTextCtrl(TextCtrlPanel, wxID_ANY,
+			wxT("Type Something."),
+			wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_RICH2
+		);
+
+		TCP_Sizer->Add(Content, 1, wxEXPAND | wxALL, 10);
+
+		TextCtrlPanel->SetSizer(TCP_Sizer);
+
+	// middle Text Ctrl Adjustment end
+
+	MainSizer->Add(SideButtonPanel, 0, wxEXPAND | wxALL, horizontal_space);
+	MainSizer->Add(TextCtrlPanel, 1, wxEXPAND | wxALL, horizontal_space);
+	MainSizer->Add(PlayerCardPanel, 0, wxEXPAND | wxALL, horizontal_space);
+
+	MainPanel->SetSizer(MainSizer);
 
 	CreateStatusBar();
 }
 
 
 void GameFrame::OnClose(wxCloseEvent& event)
-{
+{	
+	wxMessageBox("Data is lost if you didn't save!");
+
 	// Show the main menu again when closing settings
 	if (GetParent()) {
 		GetParent()->Show();
@@ -174,336 +160,58 @@ void GameFrame::OnClose(wxCloseEvent& event)
 	this->Destroy();
 }
 
-void GameFrame::SetGameObject()
+void GameFrame::saveBC(wxCommandEvent& event)
 {
-	/*
-Gamer object operations:
-	I will create an Game object.
-	Add all the players and sessions from the folders
-
-*/
-	this->game->setGameName(this->GameFolder.ToStdString());
-	extractPlayersFromFolder();
-	extractSessionsFromFolder();
-	// We have all the required the data for the creating deeper windows?
+	GM->saveGame();
+	wxMessageBox("Game is saved!");
 }
 
-// Button Click Area Start
-
-void GameFrame::OnPlayerDetailsButtonClicked()
+void GameFrame::On_Details_ButtonClicked(Player& player, wxCommandEvent& event)
 {
-	if (selectedPlayer == nullptr) {
-		wxMessageBox("No player selected!", "Error", wxOK | wxICON_ERROR);
-		return;
-	}
+	PlayerDetailsFrame* frame = new PlayerDetailsFrame(this, &player);
+	wxMessageBox("You have clicked the button of details a player"+ player.getName() + ", congrat.");
 
-	// wxMessageBox("Opening details for: " + selectedPlayer->getName(), "Player Details", wxOK | wxICON_INFORMATION);
-
-	// Oyuncu detayları penceresini aç
-	PlayerDetailsFrame* detailsFrame = new PlayerDetailsFrame(this, selectedPlayer);
-	detailsFrame->Show();
+	frame->Show();
 }
 
-
-void GameFrame::OnLoadButtonClicked(wxCommandEvent& evt)
+void GameFrame::On_Map_ButtonClicked(wxCommandEvent& event)
 {
-
-
-	wxLogStatus("Load Button Clicked");
-
-	if (this->Sessions->empty()) {
-		wxLogError("No sessions available to load.");
-		return;
-	}
-
-	// Create a list of available sessions
-	wxArrayString sessionChoices;
-	std::vector<int> sessionIDs;
-	for ( auto& session : *this->Sessions) {
-		sessionChoices.Add(wxString::Format("Session %d", session.getSessionID()));
-		sessionIDs.push_back(session.getSessionID());
-	}
-
-	// Show a session selection dialog
-	int selection = wxGetSingleChoiceIndex("Select a session to load", "Load Session", sessionChoices);
-	if (selection == wxNOT_FOUND) {
-		wxLogStatus("Session load canceled.");
-		return;
-	}
-
-	int selectedSessionID = sessionIDs[selection];
-
-	// Find the selected session
-	auto it = std::find_if(this->Sessions->begin(), this->Sessions->end(),
-		[selectedSessionID](const Session& s) { return s.getSessionID() == selectedSessionID; });
-
-	if (it == this->Sessions->end()) {
-		wxLogError("Failed to find the selected session.");
-		return;
-	}
-
-	this->currentSession = &(*it);
-
-	// Get session text
-	std::vector<std::string> sessionText = it->getSessionText();
-	std::string fullText = "";
-	for (const auto& line : sessionText) {
-		fullText += line + "\n";
-	}
-
-	// Set the content to the text editor
-	this->textEditor = dynamic_cast<wxTextCtrl*>(FindWindowById(ID_TextEditor, this));
-	if (this->textEditor) {
-		this->textEditor->SetValue(fullText);
-	}
-	else {
-		wxLogError("Failed to find the text editor.");
-	}
+	wxMessageBox("Map Button Clicked!");
 }
 
-// there can be a 2 option to save which one is saving the current editing session or creating a difeerent session object
-// then add it to the sessions folder.
-void GameFrame::OnSaveButtonClicked(wxCommandEvent& evt)
+void GameFrame::On_Load_ButtonClicked(wxCommandEvent& event)
 {
-	wxLogMessage("Game saved!");
-	this->game->saveGame(this->PlayersDir.ToStdString(), this->SessionsDir.ToStdString());
-}
 
-void GameFrame::OnNewSessionSaveButtonClicked(wxCommandEvent& evt)
-{
-	wxLogStatus("Save Button Clicked");
+	wxMessageBox("Load Button.");
 
-	wxString theTextInTheTextCtrl = this->textEditor->GetValue();
-	std::vector<std::string> sessionText;
-	std::istringstream textStream(theTextInTheTextCtrl.ToStdString());
-	std::string line;
-	while (std::getline(textStream, line)) {
-		sessionText.push_back(line);
-	}
-
-	// Create a new session object
-	Session newSession;
-	newSession.setSessionID(this->Sessions->size() + 1);
-
-	// get the time and date
-	time_t now = time(0);
-	tm* ltm = localtime(&now);
-
-	// create session object to fill the session object
-	newSession.setCreatedDate(std::to_string(1900 + ltm->tm_year) + "/" + std::to_string(1 + ltm->tm_mon) + "/" + std::to_string(ltm->tm_mday));
-	newSession.setLastModifiedDate(std::to_string(1900 + ltm->tm_year) + "/" + std::to_string(1 + ltm->tm_mon) + "/" + std::to_string(ltm->tm_mday));
-	newSession.setSessionText(sessionText);
-
-	// Add the session to the game object
-	this->game->addSession(newSession);
-
-
-}
-
-void GameFrame::OnAddPlayerButtonClicked(wxCommandEvent& evt)
-{
-}
-
-
-void GameFrame::OnMapButtonClicked(wxCommandEvent& evt)
-{
-	// Ensure PNG support is initialized
-	wxImage::AddHandler(new wxPNGHandler());
-
-	// Open a file dialog to choose a PNG file
-	wxFileDialog openFileDialog(this, _("Open PNG file"), "", "",
-		"PNG files (*.png)|*.png",
-		wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-
-	// If the user selects a file
-	if (openFileDialog.ShowModal() == wxID_OK)
+	// Mevcut oturumlardan key’leri alıyoruz
+	std::vector<std::string> keys;
+	for (auto& [key, session] : *this->GM->getGame()->getSessions())
 	{
-		// Get the path of the selected file
-		wxString filePath = openFileDialog.GetPath();
-
-		// Debug: Show the selected file path
-		// wxMessageBox("Selected File: " + filePath, "Debug", wxOK | wxICON_INFORMATION);
-
-		// Create a new MapFrame to display the selected image
-		MapFrame* mapFrame = new MapFrame(this, filePath);
-		mapFrame->Show(true);
+		keys.push_back(key);
 	}
+
+	// wxArrayString oluşturup, std::string verileri wxString'e çevirerek ekliyoruz.
+	wxArrayString choices;
+	for (const auto& key : keys)
+	{
+		// Eğer uygulamanız Unicode destekliyorsa direk wxString(key) kullanılabilir.
+		choices.Add(wxString(key));
+	}
+
+	// wxChoice (seçilebilir liste) kontrolü oluşturuyoruz.
+	// 'this' burada GameFrame (ana pencere) nesnesidir.
+	wxChoice* choiceControl = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
+
+	// Varsayılan olarak ilk elemanı seçili yapalım (isteğe bağlı)
+	if (!choices.IsEmpty())
+		choiceControl->SetSelection(0);
+
+	choiceControl->Show();
+
 }
 
-
-
-// Button Click Area End
-
-// Implement this and use it for players
-// This will search for the player json files and adds created player objects to the 
-// this->game->players which is a vector<Player>
-// HANDLE WITH SMART POINTERS
-void GameFrame::extractPlayersFromFolder() {
-	if (!fs::exists(this->PlayersDir.ToStdString()) || !fs::is_directory(this->PlayersDir.ToStdString())) {
-		wxLogError("Players directory does not exist: %s", this->PlayersDir);
-		return;
-	}
-
-	for (const auto& entry : fs::directory_iterator(this->PlayersDir.ToStdString())) {
-		if (entry.path().extension() == ".json") {
-			std::ifstream file(entry.path());
-			if (!file.is_open()) {
-				wxLogError("Failed to open player file: %s", entry.path().string());
-				continue;
-			}
-
-			json playerJson;
-			file >> playerJson;
-			file.close();
-
-			try {
-				Player p;
-				p.setName(playerJson["name"].get<std::string>());
-				p.setCharacterName(playerJson["characterName"].get<std::string>());
-				p.setHealth(playerJson["health"].get<double>());
-				p.setBaseAttack(playerJson["baseAttack"].get<double>());
-				p.setStory(playerJson["story"].get<std::string>());
-
-				game->addPlayer(p);
-			}
-			catch (const std::exception& e) {
-				wxLogError("Error parsing player JSON file: %s", e.what());
-			}
-		}
-	}
-}
-
-// Does the same thing as extractPlayerFromFolder
-// HANDLE WITH SMART POINTERS
-void GameFrame::extractSessionsFromFolder() {
-	if (!fs::exists(this->SessionsDir.ToStdString()) || !fs::is_directory(this->SessionsDir.ToStdString())) {
-		wxLogError("Sessions directory does not exist: %s", this->SessionsDir);
-		return;
-	}
-
-	for (const auto& entry : fs::directory_iterator(this->SessionsDir.ToStdString())) {
-		if (entry.path().extension() == ".json") {
-			std::ifstream file(entry.path());
-			if (!file.is_open()) {
-				wxLogError("Failed to open session JSON file: %s", entry.path().string());
-				continue;
-			}
-
-			json sessionJson;
-			try {
-				file >> sessionJson;
-			}
-			catch (const json::parse_error& e) {
-				wxLogError("JSON parsing error in file %s: %s", entry.path().string(), e.what());
-				continue;
-			}
-			file.close();
-
-			try {
-				if (!sessionJson.contains("sessionID") ||
-					!sessionJson.contains("sessionCreatedDate") ||
-					!sessionJson.contains("sessionLastModifiedDate") ||
-					!sessionJson.contains("sessionTextFile")) {
-
-					wxLogError("Missing fields in session JSON file: %s", entry.path().string());
-					continue;
-				}
-
-				// Creating a session object
-				Session s;
-				s.setSessionID(sessionJson["sessionID"].get<int>());
-				s.setCreatedDate(sessionJson["sessionCreatedDate"].get<std::string>());
-				s.setLastModifiedDate(sessionJson["sessionLastModifiedDate"].get<std::string>());
-
-				// Read session text from the specified file
-				std::string textFilePath = this->SessionsDir.ToStdString() + "/" + sessionJson["sessionTextFile"].get<std::string>();
-				std::ifstream textFile(textFilePath);
-
-				if (!textFile.is_open()) {
-					wxLogError("Failed to open session text file: %s", textFilePath);
-					continue;
-				}
-
-				std::vector<std::string> sessionText;
-				std::string line;
-				while (std::getline(textFile, line)) {
-					sessionText.push_back(line);
-				}
-				textFile.close();
-
-				s.setSessionText(sessionText);
-				this->game->addSession(s);
-
-				// wxLogMessage("Successfully added session: %d", s.getSessionID());
-			}
-			catch (const std::exception& e) {
-				wxLogError("Error processing session file: %s", e.what());
-			}
-		}
-	}
-}
-
-void GameFrame::OnSaveForCurrentSessionButtonClicked(wxCommandEvent& evt)
+void GameFrame::On_SaveForNewSession_ButtonClicked(wxCommandEvent& event)
 {
-	// Ensure a session is currently loaded
-	if (this->currentSession == nullptr) {
-		wxLogError("No session is currently loaded. Please load a session to save changes.");
-		return;
-	}
-
-	// Retrieve the current text from the text editor
-	wxString textValue = this->textEditor->GetValue();
-	std::vector<std::string> sessionText;
-	std::istringstream iss(textValue.ToStdString());
-	std::string line;
-	while (std::getline(iss, line)) {
-		sessionText.push_back(line);
-	}
-
-	// Update the session's text data
-	this->currentSession->setSessionText(sessionText);
-
-	// Update the session's last modified date to the current date
-	time_t now = time(0);
-	tm* ltm = localtime(&now);
-	std::string modifiedDate = std::to_string(1900 + ltm->tm_year) + "/" +
-		std::to_string(1 + ltm->tm_mon) + "/" +
-		std::to_string(ltm->tm_mday);
-	this->currentSession->setLastModifiedDate(modifiedDate);
-
-	// Build file names and paths for saving
-	int sessionID = this->currentSession->getSessionID();
-	std::string sessionJSONFileName = "Session_" + std::to_string(sessionID) + ".json";
-	std::string sessionJSONFilePath = this->SessionsDir.ToStdString() + "/" + sessionJSONFileName;
-	std::string sessionTextFileName = "Session_" + std::to_string(sessionID) + "_text.txt";
-	std::string sessionTextFilePath = this->SessionsDir.ToStdString() + "/" + sessionTextFileName;
-
-	// Create the JSON object for the session
-	json sessionJson;
-	sessionJson["sessionID"] = sessionID;
-	sessionJson["sessionCreatedDate"] = this->currentSession->getCreatedDate();
-	sessionJson["sessionLastModifiedDate"] = this->currentSession->getLastModifiedDate();
-	sessionJson["sessionTextFile"] = sessionTextFileName;
-
-	// Write the session text to its text file
-	std::ofstream textFile(sessionTextFilePath);
-	if (!textFile.is_open()) {
-		wxLogError("Failed to open session text file for writing: %s", sessionTextFilePath);
-		return;
-	}
-	for (const auto& ln : sessionText) {
-		textFile << ln << std::endl;
-	}
-	textFile.close();
-
-	// Write the session JSON to its file
-	std::ofstream jsonFile(sessionJSONFilePath);
-	if (!jsonFile.is_open()) {
-		wxLogError("Failed to open session JSON file for writing: %s", sessionJSONFilePath);
-		return;
-	}
-	jsonFile << sessionJson.dump(4);  // Pretty-print JSON with indent of 4 spaces
-	jsonFile.close();
-
-	wxLogMessage("Current session (ID %d) saved successfully.", sessionID);
+	wxMessageBox("Save For New Session.");
 }

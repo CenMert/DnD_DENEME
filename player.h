@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-#include <wx/wx.h>   // Windows/wxWidgets header that eventually pulls in rpcndr.h
-
 // Undefine the conflicting 'byte' from Windows headers.
 #ifdef byte
 #undef byte
@@ -22,11 +20,12 @@ using namespace std;
 class Player {
 public:
     Player(string name, string characterName);
+    Player(string name, string characterName, double baseAttack, double health, string story);
     Player();
 
     ~Player() {}
 
-    Player operator=(const Player& p);
+    Player& operator=(const Player& p);
 
     // getters
     string getName() const;
@@ -34,7 +33,6 @@ public:
     double getHealth() const;
     double getBaseAttack() const;
     string getStory() const;
-    string getPathToJson() const;
 
     // setters
     void setName(const string &name);
@@ -42,15 +40,8 @@ public:
     void setHealth(const double health);
     void setBaseAttack(const double baseAttack);
     void setStory(const std::string &story);
-    void setPathToJson(const std::string & path);
 
-    //JSON Functions
-    bool setJsonFileDefault(const std::string& theGame);
-    bool saveToJsonFile(const std::string& theGame);
-    bool copyFromJson(); // this will copy the content of an json file whic hold a player
-
-    std::string sanitizeFilename(const std::string& input);
-
+    void display() const ;
 private:
 
     string name;
@@ -60,7 +51,7 @@ private:
     string story;
 
     // maybe i can have the directory of the json file to manage easily.
-    string pathToJson;
+    string fileName;
 };
 
 #endif

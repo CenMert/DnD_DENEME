@@ -32,10 +32,7 @@
     </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="json.hpp" />
-    <ClInclude Include="BaseDice.h">
-      <Filter>gen\include</Filter>
-    </ClInclude>
-    <ClInclude Include="GameManage.h">
+    <ClInclude Include="GameManager.h">
       <Filter>gen\include</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
@@ -47,16 +44,19 @@
     <ClInclude Include="MainMenuFrame.h">
       <Filter>ui\include</Filter>
     </ClInclude>
-    <ClInclude Include="MapFrame.h">
-      <Filter>ui\include</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerDetailsFrame.h">
-      <Filter>ui\include</Filter>
-    </ClInclude>
     <ClInclude Include="PlayFrame.h">
       <Filter>ui\include</Filter>
     </ClInclude>
     <ClInclude Include="SettingsFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseDice.h">
+      <Filter>gen\include</Filter>
+    </ClInclude>
+    <ClInclude Include="MapFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerDetailsFrame.h">
       <Filter>ui\include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -67,7 +67,7 @@
     <ClCompile Include="Player.cpp">
       <Filter>gen\src</Filter>
     </ClCompile>
-    <ClCompile Include="GameManage.cpp">
+    <ClCompile Include="GameManager.cpp">
       <Filter>gen\src</Filter>
     </ClCompile>
     <ClCompile Include="App.cpp">
@@ -79,12 +79,6 @@
     <ClCompile Include="MainMenuFrame.cpp">
       <Filter>ui\src</Filter>
     </ClCompile>
-    <ClCompile Include="MapFrame.cpp">
-      <Filter>ui\src</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerDetailsFrame.cpp">
-      <Filter>ui\src</Filter>
-    </ClCompile>
     <ClCompile Include="PlayFrame.cpp">
       <Filter>ui\src</Filter>
     </ClCompile>
@@ -93,6 +87,12 @@
     </ClCompile>
     <ClCompile Include="Session.cpp">
       <Filter>gen\src</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerDetailsFrame.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="MapFrame.cpp">
+      <Filter>ui\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

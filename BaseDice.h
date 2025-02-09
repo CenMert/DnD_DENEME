@@ -4,9 +4,10 @@
 #include <random>
 #include <iostream>
 
-// Base class for all dice types
-class BaseDice {
-public:
-    virtual ~BaseDice() = default;
-};
 
+
+    // Base class for all dice types
+    class BaseDice {
+    public:
+        virtual ~BaseDice() = default;
+    };

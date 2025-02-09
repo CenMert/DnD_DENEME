@@ -1,11 +1,25 @@
 #pragma once
+#define _HAS_STD_BYTE 0
+#include <cstddef>
+// diðer includes...
+
+#include "GameManager.h"
 #include "PlayFrame.h"
-#include "Game.h"
-#include "Player.h"
-#include "Session.h"
 
 #include <string>
 #include <wx/wx.h>
+#include "MapFrame.h"
+#include "PlayerDetailsFrame.h"
+#include "json.hpp"
+
+#include <filesystem>
+#include <fstream>
+#include <vector>
+#include <sstream>
+
+#include <wx/filedlg.h>
+#include <wx/statbmp.h>
+#include <wx/image.h>
 
 
 class GameFrame : public wxFrame
@@ -18,69 +32,39 @@ private:
 	// On Close
 	void OnClose(wxCloseEvent& event);
 
-	// Main Panel
-	void SetGameObject();
-
-	// Button Clicks
-	void OnAddPlayerButtonClicked(wxCommandEvent& evt);
-	void OnMapButtonClicked(wxCommandEvent& evt);
-		// Im not sure whether this will work for all player details button
-	void OnPlayerDetailsButtonClicked();
-	void OnLoadButtonClicked(wxCommandEvent& evt);
-	void OnSaveButtonClicked(wxCommandEvent& evt);
-	void OnSaveForCurrentSessionButtonClicked(wxCommandEvent& evt);
-	void OnNewSessionSaveButtonClicked(wxCommandEvent& evt);
-
-	// setters
-	void setGameFolder(const wxString GameFolder) { this->GameFolder = GameFolder; }
-	void setGameDirectory(const wxString GameDirectory) { this->GameDir = GameDirectory; }
-	void setPlayersDirectory() { this->PlayersDir = this->GameDir + "/" + "players"; }
-	void setSessionsDirectory() { this->SessionsDir = this->GameDir + "/" + "sessions"; }
-
-	// getters
-	wxString getGameFolder() const { return this->GameFolder; }
-	wxString getGameDirectory() const { return this->GameDir; }
-	wxString getPlayersDirectory() const { return this->PlayersDir; }
-	wxString getSessionsDirectory() const { return this->SessionsDir; }
-
-	// folder functions
-	void extractPlayersFromFolder();
-	void extractSessionsFromFolder();
+	//	Side Panel Buttons
+	void saveBC(wxCommandEvent& event);
 
 	// some constrains
 	// Example Folder Hierarcy
 	/*
 		-GameData/
 			|-Game1/
-				|-players/
+				|-Players/
 					|-Berke.json
 					|-Serhat.json
-				|-sessions/
-					|-session1.json
-					|-session1.txt
-					|-session2.json
-					|-session2.txt
+				|-Sessions/
+					|-Session1/
+						|-Session1.json
+						|-Session1.txt
+					|-Session2/
+						|-Session2.json
+						|-Session2.txt
 				|-maps/
 					|-DnD_Battle_Map.png
 	*/
 
-	wxString GameFolder;	// Game1
-	wxString GameDir;		// GameData/Game1
-	wxString PlayersDir;	// GameData/Game1/players
-	wxString SessionsDir;	// GameData/Game1/sessions
+	wxTextCtrl* Content;
 
-	std::shared_ptr<Game> game;
-	std::shared_ptr< vector<Player> > Players;
-	std::shared_ptr< vector<Session> > Sessions;
+	std::shared_ptr< GameManager > GM;
 
 	std::string fontStyle = "Papyrus";
-	wxColour buttonColour = wxColour(166, 85, 28);
-	wxColour backgroundColour = wxColour(204, 147, 114);
 	
-	// Text Editor to handle it on load and save functions
-	wxTextCtrl* textEditor;
-	Player* selectedPlayer = nullptr;
-	wxPanel* m_mapImagePanel;
-	Session* currentSession = nullptr;
+	// On Button Events
+	void On_Details_ButtonClicked(Player& player, wxCommandEvent& event);
+	void On_Map_ButtonClicked(wxCommandEvent& event);
+
+	void On_Load_ButtonClicked(wxCommandEvent& event);
+	void On_SaveForNewSession_ButtonClicked(wxCommandEvent& event);
 };
 
