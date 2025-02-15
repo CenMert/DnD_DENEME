@@ -215,11 +215,21 @@ void GameManager::savePlayerToJson(const Player& player, fs::path player_path) {
 
 void GameManager::saveSessionToJson_txt(const Session& session, fs::path json_path, fs::path txt_path) {
 
+    // get the current time
+    std::time_t t = std::time(0);   // Þu anki zamaný al
+    std::tm* now = std::localtime(&t);
+
+    std::string today =
+        std::to_string(now->tm_mday) + "-" +
+        std::to_string(now->tm_mon + 1) + "-" +
+        std::to_string(now->tm_year + 1900);
+    // end current time
+
     json session_json_object;
     session_json_object["sessionID"] = session.getSessionID();
     session_json_object["sessionName"] = session.getSessionName();
     session_json_object["sessionCreatedDate"] = session.getSessionCreatedDate();
-    session_json_object["sessionLastModifiedDate"] = session.getSessionLastModifiedDate();
+    session_json_object["sessionLastModifiedDate"] = today;
     session_json_object["sessionTextFile"] = session.getSessionTextFile();
 
     std::ofstream json_file(json_path);

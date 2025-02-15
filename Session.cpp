@@ -38,6 +38,17 @@ Session& Session::operator=(const Session& s) {
     return *this;
 }
 
+std::string Session::getSessionText_asCompleteString() const
+{
+    std::string oneString;
+    for (std::string str : sessionText)
+    {
+        oneString += str + "\n";
+    }
+
+    return oneString;
+}
+
 // Setters
 void Session::setSessionID(const int id) { sessionID = id; }
 void Session::setCreatedDate(const std::string& date) { sessionCreatedDate = date; }

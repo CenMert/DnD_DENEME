@@ -21,6 +21,10 @@ public:
 
     void setGame(const std::string& Game);
 
+    // Additional functions for the save operation
+    void savePlayerToJson(const Player& player, fs::path player_path);
+    void saveSessionToJson_txt(const Session& session, fs::path json_path, fs::path txt_path);
+
     std::shared_ptr<Game> getGame();
 
 private:
@@ -28,9 +32,7 @@ private:
     std::string gameName;
 
 
-    // Additional functions for the save operation
-    void savePlayerToJson(const Player& player, fs::path player_path);
-    void saveSessionToJson_txt(const Session& session, fs::path json_path, fs::path txt_path);
+
 
     Player loadPlayerFromJson(nlohmann::json player_json_file);
 };

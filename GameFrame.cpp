@@ -37,6 +37,8 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	: wxFrame(parent, wxID_ANY, "The Game", wxDefaultPosition, wxSize(1280, 720)),
 	GM(std::make_shared<GameManager>(GameFolder.ToStdString()))
 {
+	// initialization
+	loaded_session = new Session();
 
 	wxFont oldFont = wxFont(wxString(fontStyle));
 	// the icon operation that appears at the top of the window with its header.
@@ -63,18 +65,20 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		wxButton* SaveButton = new wxButton(SideButtonPanel, wxID_ANY, "Save");
 		wxButton* LoadButton = new wxButton(SideButtonPanel, wxID_ANY, "Load");
 		wxButton* SaveForNewSessionButton = new wxButton(SideButtonPanel, wxID_ANY, "Save For\nNew Session");
+		wxButton* SaveForCurrentSessionButton = new wxButton(SideButtonPanel, wxID_ANY, "Save For\nCurrent Session");
 
 		SBP_Sizer->Add(MapButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(SaveButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(LoadButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(SaveForNewSessionButton, 0, wxALL, vertical_space);
+		SBP_Sizer->Add(SaveForCurrentSessionButton, 0, wxALL, vertical_space);
 
 		
 		SaveButton->Bind(wxEVT_BUTTON, &GameFrame::saveBC, this);
 		MapButton->Bind(wxEVT_BUTTON, &GameFrame::On_Map_ButtonClicked, this);
 		LoadButton->Bind(wxEVT_BUTTON, &GameFrame::On_Load_ButtonClicked, this);
 		SaveForNewSessionButton->Bind(wxEVT_BUTTON, &GameFrame::On_SaveForNewSession_ButtonClicked, this);
-		
+		SaveForCurrentSessionButton->Bind(wxEVT_BUTTON, &GameFrame::On_SaveForCurrentSession_ButtonClicked, this);
 
 
 		SideButtonPanel->SetSizer(SBP_Sizer);
@@ -176,42 +180,185 @@ void GameFrame::On_Details_ButtonClicked(Player& player, wxCommandEvent& event)
 
 void GameFrame::On_Map_ButtonClicked(wxCommandEvent& event)
 {
-	wxMessageBox("Map Button Clicked!");
+	fs::path map_folder =
+		fs::path("GameData") / this->GM->getGame()->getGameName() / "Maps";
+
+	wxArrayString choices;
+	for (const auto& file : fs::directory_iterator(map_folder))
+	{
+		choices.Add(file.path().stem().string());
+	}
+
+	ChoiceDialog dlg(this, choices);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		wxString selectedMap = dlg.GetSelectedString();
+
+		std::string selectedMapStr = std::string(selectedMap.mb_str());
+		fs::path mapFilePath = map_folder / (selectedMapStr + ".png");
+
+		this->SetStatusText("Map selected: " + selectedMapStr);
+
+		MapFrame* mapFrame = new MapFrame(this, wxString(mapFilePath.string()));
+		mapFrame->Show();
+	}
+
 }
 
 void GameFrame::On_Load_ButtonClicked(wxCommandEvent& event)
 {
+	this->SetStatusText("Load Button Clicked.");
 
-	wxMessageBox("Load Button.");
-
-	// Mevcut oturumlardan key’leri alıyoruz
+	// Get keys from sessions
 	std::vector<std::string> keys;
 	for (auto& [key, session] : *this->GM->getGame()->getSessions())
 	{
 		keys.push_back(key);
 	}
 
-	// wxArrayString oluşturup, std::string verileri wxString'e çevirerek ekliyoruz.
+	// Convert keys to wxArrayString
 	wxArrayString choices;
 	for (const auto& key : keys)
 	{
-		// Eğer uygulamanız Unicode destekliyorsa direk wxString(key) kullanılabilir.
 		choices.Add(wxString(key));
 	}
 
-	// wxChoice (seçilebilir liste) kontrolü oluşturuyoruz.
-	// 'this' burada GameFrame (ana pencere) nesnesidir.
-	wxChoice* choiceControl = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
+	// Create and show the dialog modally
+	ChoiceDialog dlg(this, choices);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		// Process selection
+		int selectedIndex = dlg.GetSelection();
+		wxString selectedKey = dlg.GetSelectedString();
+		wxLogStatus("You selected: " + selectedKey);
 
-	// Varsayılan olarak ilk elemanı seçili yapalım (isteğe bağlı)
-	if (!choices.IsEmpty())
-		choiceControl->SetSelection(0);
+		// Convert wxString to std::string
+		std::string keyStr = std::string(selectedKey.mb_str());
 
-	choiceControl->Show();
+		// Get the sessions map (assuming it's a shared_ptr)
+		std::shared_ptr<std::unordered_map<std::string, Session>> sessions = this->GM->getGame()->getSessions(); // shared_ptr to unordered_map
 
+		// Use find() to locate the session using the key
+		auto it = sessions->find(keyStr);
+		if (it != sessions->end())
+		{
+			*loaded_session = it->second;
+			std::string content = loaded_session->getSessionText_asCompleteString();
+			this->Content->ChangeValue(content);
+			this->SetTitle("The Game - " + loaded_session->getSessionName());
+		}
+		else
+		{
+			wxMessageBox("Session not found for key: " + selectedKey);
+		}
+	}
 }
 
 void GameFrame::On_SaveForNewSession_ButtonClicked(wxCommandEvent& event)
 {
-	wxMessageBox("Save For New Session.");
+	// declare the name of the session
+	std::string sessionFileName;
+	QuestionDialog QD(this, sessionFileName, "What is the sessions name?");
+	if (QD.ShowModal() == wxID_OK)
+	{
+		sessionFileName = QD.GetAnswer();
+	}
+	// end name of the session
+
+	// random generation
+	std::random_device rd;
+	std::mt19937_64 gen(rd());
+	std::uniform_int_distribution<long long> dist(10000, 99999);
+	int sessionRandomID = dist(gen);
+	// random generation end
+
+	// get the current time
+	std::time_t t = std::time(0);   // Şu anki zamanı al
+	std::tm* now = std::localtime(&t);
+
+	std::string today =
+		std::to_string(now->tm_mday) + "-" +
+		std::to_string(now->tm_mon + 1) + "-" + 
+		std::to_string(now->tm_year + 1900);
+	// end current time
+
+	// session text
+	std::vector< std::string > vecTXT = GetVectorOfContent();
+	//end session text
+
+	Session newSessionObject(
+		sessionRandomID,
+		sessionFileName,
+		today,
+		today,
+		sessionFileName + ".txt",
+		vecTXT
+	);
+
+	// create the folder path for new session
+	std::string gameName = this->GM->getGame()->getGameName();
+
+	fs::path session_path = 
+		fs::path("GameData") / this->GM->getGame()->getGameName() / "Sessions" / sessionFileName;
+	fs::create_directory(session_path);
+	// end path operation
+
+	// create the json and txt files
+	fs::path session_txt_path = session_path / (sessionFileName + ".txt");
+	fs::path session_json_path = session_path / (sessionFileName + ".json");
+
+	std::ofstream(session_txt_path).close();
+	std::ofstream(session_json_path).close();
+	// end file op
+
+	this->GM->getGame()->addSession(sessionFileName, newSessionObject);
+	this->GM->saveSessionToJson_txt(newSessionObject, session_json_path, session_txt_path);
+
+	this->loaded_session = &newSessionObject;
+
+	wxMessageBox("New Session is created and added to the game folder.");
+}
+
+void GameFrame::On_SaveForCurrentSession_ButtonClicked(wxCommandEvent& event)
+{
+	loaded_session->setSessionText(GetVectorOfContent());
+
+	auto it = this->GM->getGame()->getSessions()->find(this->loaded_session->getSessionName());
+	if (it != this->GM->getGame()->getSessions()->end()) {
+		it->second = *loaded_session; // change it directly
+	}
+	else {
+		std::cerr << "Session not found!\n";
+	}
+
+	
+
+	std::string sessionFileName = loaded_session->getSessionName();
+
+	fs::path session_path =
+		fs::path("GameData") / this->GM->getGame()->getGameName() / "Sessions" / sessionFileName;
+
+	fs::path session_txt_path = session_path / (sessionFileName + ".txt");
+	fs::path session_json_path = session_path / (sessionFileName + ".json");
+
+	this->GM->saveSessionToJson_txt(*loaded_session, session_json_path, session_txt_path);
+
+	this->SetStatusText("Save For Current Button Clicked.");
+}
+
+std::vector<std::string> GameFrame::GetVectorOfContent()
+{
+	// wxTextCtrl içeriğini al
+	std::string ContentSTR = this->Content->GetValue().ToStdString();
+
+	std::vector<std::string> vecTXT;
+	std::stringstream ss(ContentSTR);
+	std::string line;
+
+	// Satır satır oku ve vektöre ekle
+	while (std::getline(ss, line, '\n')) {
+		vecTXT.push_back(line);
+	}
+
+	return vecTXT;
 }

@@ -33,6 +33,8 @@ public:
     std::string getSessionTextFile() const { return this->sessionTextFile; }
     std::vector<std::string> getSessionText() const { return this->sessionText; }
 
+    std::string getSessionText_asCompleteString() const;
+
     // Setters
     void setSessionID(const int id);
     void setCreatedDate(const std::string& date);

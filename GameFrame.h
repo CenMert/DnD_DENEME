@@ -10,12 +10,16 @@
 #include <wx/wx.h>
 #include "MapFrame.h"
 #include "PlayerDetailsFrame.h"
+#include "ChoiceDialog.h"
+#include "QuestionDialog.h"
 #include "json.hpp"
 
 #include <filesystem>
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <random>
+#include <chrono>
 
 #include <wx/filedlg.h>
 #include <wx/statbmp.h>
@@ -56,6 +60,9 @@ private:
 
 	wxTextCtrl* Content;
 
+	// this is the varibal that selected for load session
+	Session* loaded_session;
+
 	std::shared_ptr< GameManager > GM;
 
 	std::string fontStyle = "Papyrus";
@@ -66,5 +73,9 @@ private:
 
 	void On_Load_ButtonClicked(wxCommandEvent& event);
 	void On_SaveForNewSession_ButtonClicked(wxCommandEvent& event);
+	void On_SaveForCurrentSession_ButtonClicked(wxCommandEvent& event);
+
+	// additional required functions
+	std::vector< std::string > GetVectorOfContent();
 };
 

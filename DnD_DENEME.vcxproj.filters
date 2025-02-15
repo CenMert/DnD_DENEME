@@ -59,6 +59,12 @@
     <ClInclude Include="PlayerDetailsFrame.h">
       <Filter>ui\include</Filter>
     </ClInclude>
+    <ClInclude Include="ChoiceDialog.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="QuestionDialog.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">

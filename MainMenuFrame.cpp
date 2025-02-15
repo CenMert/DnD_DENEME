@@ -14,7 +14,14 @@ wxEND_EVENT_TABLE()
 
 MainMenuFrame::MainMenuFrame(const wxString& title)
     : wxFrame(nullptr, wxID_ANY, title)
+
+
 {
+    // the icon operation that appears at the top of the window with its header.
+    wxIcon appIcon;
+    if (appIcon.LoadFile("poition1.ico", wxBITMAP_TYPE_ICO)) { SetIcon(appIcon); }
+    else { wxLogError("Icon File couldn't added to window."); }
+
     wxPanel* mainPanel = new wxPanel(this);
     wxFont oldFont(18, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, fontStyle);
 
