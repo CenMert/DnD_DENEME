@@ -50,9 +50,6 @@
     <ClInclude Include="SettingsFrame.h">
       <Filter>ui\include</Filter>
     </ClInclude>
-    <ClInclude Include="BaseDice.h">
-      <Filter>gen\include</Filter>
-    </ClInclude>
     <ClInclude Include="MapFrame.h">
       <Filter>ui\include</Filter>
     </ClInclude>
@@ -65,6 +62,10 @@
     <ClInclude Include="QuestionDialog.h">
       <Filter>ui\include</Filter>
     </ClInclude>
+    <ClInclude Include="Dice.h">
+      <Filter>gen\include</Filter>
+    </ClInclude>
+    <ClInclude Include="DiceFrame.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -100,5 +101,9 @@
     <ClCompile Include="MapFrame.cpp">
       <Filter>ui\src</Filter>
     </ClCompile>
+    <ClCompile Include="Dice.cpp">
+      <Filter>gen\src</Filter>
+    </ClCompile>
+    <ClCompile Include="DiceFrame.cpp" />
   </ItemGroup>
 </Project>

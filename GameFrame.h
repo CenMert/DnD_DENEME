@@ -12,6 +12,7 @@
 #include "PlayerDetailsFrame.h"
 #include "ChoiceDialog.h"
 #include "QuestionDialog.h"
+#include "DiceFrame.h"
 #include "json.hpp"
 
 #include <filesystem>
@@ -74,6 +75,7 @@ private:
 	void On_Load_ButtonClicked(wxCommandEvent& event);
 	void On_SaveForNewSession_ButtonClicked(wxCommandEvent& event);
 	void On_SaveForCurrentSession_ButtonClicked(wxCommandEvent& event);
+	void On_Dice_ButtonClicked(wxCommandEvent& event);
 
 	// additional required functions
 	std::vector< std::string > GetVectorOfContent();

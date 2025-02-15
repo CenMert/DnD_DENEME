@@ -1,74 +1,54 @@
-#include "dice.h"
+#include "Dice.h"
 
-// =============================
-// Default Template Implementation (Numeric Dice)
-// =============================
+// Default constructor: delegates to the parameterized constructor with default values.
+Dice::Dice()
+    : Dice("default", 1, 6) // default dice type with range [1,6]
+{
+}
 
-template <typename T>
-Dice<T>::Dice(T min, T max) : min(min), max(max), gen(rd()) {}
+// Parameterized constructor: sets dice type and range.
+// Seeds the random generator only once.
+Dice::Dice(std::string DiceType, int range_begin, int range_end)
+    : DiceType(DiceType), range_begin(range_begin), range_end(range_end), number(0)
+{
+    static bool seeded = false;
+    if (!seeded)
+    {
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        seeded = true;
+    }
+}
 
-template <typename T>
-Dice<T>::~Dice() {}
+std::string Dice::getDiceType()
+{
+    return this->DiceType;
+}
 
-template <typename T>
-Dice<T>::Dice(const Dice& p) : min(p.min), max(p.max), gen(rd()) {}
+// Destructor
+Dice::~Dice()
+{
+    // No dynamic allocation to free
+}
 
-template <typename T>
-Dice<T>& Dice<T>::operator=(const Dice<T>& p) {
-    if (this != &p) {
-        min = p.min;
-        max = p.max;
+// Assignment operator
+Dice& Dice::operator=(const Dice& other)
+{
+    if (this != &other)
+    {
+        this->DiceType = other.DiceType;
+        this->range_begin = other.range_begin;
+        this->range_end = other.range_end;
+        this->number = other.number;
     }
     return *this;
 }
 
-template <typename T>
-void Dice<T>::setDiceRange(T min, T max) {
-    if (min > 0 && max > min) {
-        this->min = min;
-        this->max = max;
-    }
+// roll() method: Rolls the dice within the provided range and returns the result.
+int Dice::roll()
+{
+
+    // Compute range size and generate random number.
+    int rangeSize = this->range_end - this->range_begin + 1;
+    number = std::rand() % rangeSize + this->range_begin;
+    return number;
 }
-
-template <typename T>
-T Dice<T>::roll() {
-    std::uniform_real_distribution<T> dist(min, max);
-    return dist(gen);
-}
-
-// Explicit Instantiations
-template class Dice<int>;
-template class Dice<double>;
-
-// =============================
-// Specialization for Dice<std::string>
-// =============================
-
-Dice<std::string>::Dice() : gen(rd()) {}
-
-Dice<std::string>::~Dice() {}
-
-Dice<std::string>::Dice(const Dice& p) : options(p.options), gen(rd()) {}
-
-Dice<std::string>& Dice<std::string>::operator=(const Dice<std::string>& p) {
-    if (this != &p) {
-        options = p.options;
-    }
-    return *this;
-}
-
-void Dice<std::string>::setOptions(const std::vector<std::string>& options) {
-    this->options = options;
-}
-
-std::string Dice<std::string>::roll() {
-    if (options.empty()) {
-        return "No options set!";
-    }
-
-    std::uniform_int_distribution<int> dist(0, options.size() - 1);
-    return options[dist(gen)];
-}
-
-// Explicit Specialization
-template class Dice<std::string>;

@@ -66,20 +66,21 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		wxButton* LoadButton = new wxButton(SideButtonPanel, wxID_ANY, "Load");
 		wxButton* SaveForNewSessionButton = new wxButton(SideButtonPanel, wxID_ANY, "Save For\nNew Session");
 		wxButton* SaveForCurrentSessionButton = new wxButton(SideButtonPanel, wxID_ANY, "Save For\nCurrent Session");
-
+		wxButton* DiceButton = new wxButton(SideButtonPanel, wxID_ANY, "Dice");
+		
 		SBP_Sizer->Add(MapButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(SaveButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(LoadButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(SaveForNewSessionButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(SaveForCurrentSessionButton, 0, wxALL, vertical_space);
-
+		SBP_Sizer->Add(DiceButton, 0, wxALL, vertical_space);
 		
 		SaveButton->Bind(wxEVT_BUTTON, &GameFrame::saveBC, this);
 		MapButton->Bind(wxEVT_BUTTON, &GameFrame::On_Map_ButtonClicked, this);
 		LoadButton->Bind(wxEVT_BUTTON, &GameFrame::On_Load_ButtonClicked, this);
 		SaveForNewSessionButton->Bind(wxEVT_BUTTON, &GameFrame::On_SaveForNewSession_ButtonClicked, this);
 		SaveForCurrentSessionButton->Bind(wxEVT_BUTTON, &GameFrame::On_SaveForCurrentSession_ButtonClicked, this);
-
+		DiceButton->Bind(wxEVT_BUTTON, &GameFrame::On_Dice_ButtonClicked, this);
 
 		SideButtonPanel->SetSizer(SBP_Sizer);
 	// side button adjustmen end.
@@ -344,6 +345,26 @@ void GameFrame::On_SaveForCurrentSession_ButtonClicked(wxCommandEvent& event)
 	this->GM->saveSessionToJson_txt(*loaded_session, session_json_path, session_txt_path);
 
 	this->SetStatusText("Save For Current Button Clicked.");
+}
+
+void GameFrame::On_Dice_ButtonClicked(wxCommandEvent& event)
+{
+	wxArrayString choices;
+	auto& vec = this->GM->getGame()->getDices();
+	for (auto& dice : *vec)
+	{
+		choices.Add(dice.getDiceType());
+	}
+	
+	
+	ChoiceDialog dlg(this, choices);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		auto& theDice( vec->at(dlg.GetSelection()) );
+		DiceFrame* diceFrame = new DiceFrame(this, theDice);
+
+		diceFrame->Show();
+	}
 }
 
 std::vector<std::string> GameFrame::GetVectorOfContent()

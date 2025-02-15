@@ -144,8 +144,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
-    <ClInclude Include="BaseDice.h" />
     <ClInclude Include="ChoiceDialog.h" />
+    <ClInclude Include="Dice.h" />
+    <ClInclude Include="DiceFrame.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameFrame.h" />
     <ClInclude Include="GameManager.h" />
@@ -162,6 +163,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Dice.cpp" />
+    <ClCompile Include="DiceFrame.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameFrame.cpp" />
     <ClCompile Include="GameManager.cpp" />
