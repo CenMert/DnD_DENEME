@@ -1,11 +1,16 @@
 #pragma once
 #include <wx/wx.h>
 #include <wx/animate.h>
+#include <wx/stream.h>
 #include <wx/filename.h>
+#include <wx/image.h>
+#include <wx/wfstream.h>
+#include <wx/imaggif.h>
 #include <filesystem>
 
 #include "GameManager.h"
 #include "Dice.h"
+#include <string>
 
 namespace fs = std::filesystem;
 
@@ -15,24 +20,12 @@ public:
     DiceFrame(wxWindow* parent, Dice theDice);
 
 private:
-    // Roll butonuna týklanýldýðýnda çalýþacak event handler
-    void OnRoll(wxCommandEvent& event);
-
-    // Yardýmcý fonksiyon: Belirtilen gif dosyasýndan son kareyi wxBitmap olarak döndürür.
-    wxBitmap GetLastFrameBitmap(const wxString& gifPath);
-
-    // Zar nesnesi ve gif dosya yolu
     Dice theDice;
     fs::path gif_path;
 
-    // 128x128 boyutlu gif animasyonlarýný göstermek için kontrol (wxAnimationCtrl kullanýlýyor)
-    wxAnimationCtrl* mGifCtrl;
-    // "roll" butonu
-    wxButton* mRollButton;
-    // Animasyon oynuyor mu?
-    bool mIsPlaying = false;
-    // Animasyon durduðunda son kareyi göstermek için kullanýlacak statik bitmap
-    wxStaticBitmap* mStaticBitmap = nullptr;
+    void RollAndGetGIFPath();
 
-    wxDECLARE_EVENT_TABLE();
+    void On_Roll_ButtonClicked(wxCommandEvent& event);
+
+    bool IsGIFReadableWithHandler(const std::string& gif_path);
 };
