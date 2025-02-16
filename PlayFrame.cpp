@@ -35,6 +35,7 @@ PlayFrame::PlayFrame(wxWindow* parent)
 		wxDefaultPosition, wxDefaultSize, choices
 	); choiceWindow->SetFont(oldFont);
 
+	choiceWindow->SetSelection(0);
 	setChoiceWindow(choiceWindow);
 
 	// To choose the selected Game Folder.

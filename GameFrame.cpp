@@ -143,6 +143,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 			std::string audio_filename = file_path.filename().stem().string();
 
 			wxButton* AudioButton = new wxButton(AudioPanel, wxID_ANY, audio_filename);
+			AudioButton->UseBackgroundColour();
 			AudioButton->Bind(wxEVT_BUTTON, [this, file_path](wxCommandEvent& event) {
 				this->On_Audio_ButtonClicked(file_path, event);
 			});
@@ -405,19 +406,26 @@ void GameFrame::On_Audio_ButtonClicked(fs::path file_path, wxCommandEvent& event
 {
 	// Convert fs::path to wxString (ensure proper encoding)
 	wxString wxFilePath = wxString::FromUTF8(file_path.string().c_str());
-	// wxString wxFilePath = wxString::FromUTF8("level-up.wav");
 
-	// Create a wxSound object for asynchronous playback
+	// Check if the file exists
+	if (!wxFileExists(wxFilePath)) {
+		wxMessageBox("File does not exist: " + wxFilePath,
+			"Error", wxOK | wxICON_ERROR);
+		return;
+	}
+
+	// Create a wxSound object (using async playback by default)
 	wxSound sound(wxFilePath, wxSOUND_ASYNC);
 
 	if (sound.IsOk())
 	{
-		sound.Play();
-		this->SetStatusText(file_path.string());
+		// Try playing the sound using the default flag (or explicitly wxSOUND_ASYNC)
+		bool status = sound.Play();
+		this->SetStatusText(wxFilePath + " " + (status ? "played" : "failed to play"));
 	}
 	else
 	{
-		wxMessageBox("Could not play the audio file: " + wxFilePath,
+		wxMessageBox("Could not load the audio file: " + wxFilePath,
 			"Error", wxOK | wxICON_ERROR);
 	}
 }

@@ -65,7 +65,9 @@
     <ClInclude Include="Dice.h">
       <Filter>gen\include</Filter>
     </ClInclude>
-    <ClInclude Include="DiceFrame.h" />
+    <ClInclude Include="DiceFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -104,6 +106,8 @@
     <ClCompile Include="Dice.cpp">
       <Filter>gen\src</Filter>
     </ClCompile>
-    <ClCompile Include="DiceFrame.cpp" />
+    <ClCompile Include="DiceFrame.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

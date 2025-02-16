@@ -7,10 +7,10 @@
 #include <wx/wfstream.h>
 #include <wx/imaggif.h>
 #include <filesystem>
+#include <string>
 
 #include "GameManager.h"
 #include "Dice.h"
-#include <string>
 
 namespace fs = std::filesystem;
 
@@ -21,17 +21,18 @@ public:
 
 private:
     Dice theDice;
-    fs::path gif_path;
+    fs::path gif_path;  // this holds the PNG file path
 
-    // Add member variables for the gif display panel and animation control
-    wxPanel* m_gifPanel;
-    wxAnimation* m_animation = nullptr;
-    wxAnimationCtrl* m_animCtrl = nullptr;
-    wxFileInputStream* input = nullptr;
+    // Panel for displaying the image and a static bitmap control.
+    wxPanel* m_gifPanel = nullptr;
+    wxStaticBitmap* m_staticBitmap = nullptr;
 
+    // Function to set the file path based on the dice roll.
     void RollAndGetGIFPath();
 
+    // Event handler for the roll button.
     void On_Roll_ButtonClicked(wxCommandEvent& event);
 
-    bool IsGIFReadableWithHandler(const std::string& gif_path);
+    // Function to check if a PNG file is readable.
+    bool IsPNGReadableWithHandler(const std::string& png_path);
 };

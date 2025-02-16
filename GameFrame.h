@@ -22,6 +22,7 @@
 #include <random>
 #include <chrono>
 
+#include <wx/setup.h>
 #include <wx/filedlg.h>
 #include <wx/statbmp.h>
 #include <wx/image.h>
