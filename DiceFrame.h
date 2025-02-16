@@ -23,6 +23,12 @@ private:
     Dice theDice;
     fs::path gif_path;
 
+    // Add member variables for the gif display panel and animation control
+    wxPanel* m_gifPanel;
+    wxAnimation* m_animation = nullptr;
+    wxAnimationCtrl* m_animCtrl = nullptr;
+    wxFileInputStream* input = nullptr;
+
     void RollAndGetGIFPath();
 
     void On_Roll_ButtonClicked(wxCommandEvent& event);

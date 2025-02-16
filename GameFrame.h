@@ -25,6 +25,8 @@
 #include <wx/filedlg.h>
 #include <wx/statbmp.h>
 #include <wx/image.h>
+#include <wx/sound.h>
+#include <wx/msgdlg.h>
 
 
 class GameFrame : public wxFrame
@@ -76,6 +78,7 @@ private:
 	void On_SaveForNewSession_ButtonClicked(wxCommandEvent& event);
 	void On_SaveForCurrentSession_ButtonClicked(wxCommandEvent& event);
 	void On_Dice_ButtonClicked(wxCommandEvent& event);
+	void On_Audio_ButtonClicked(fs::path file_path, wxCommandEvent& event);
 
 	// additional required functions
 	std::vector< std::string > GetVectorOfContent();

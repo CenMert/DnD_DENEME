@@ -115,7 +115,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 
 			psp_sizer->Add(player_static_txt, 0, wxALIGN_CENTER | wxALL, vertical_space);
 			psp_sizer->Add(player_detail_button, 0, wxALIGN_CENTER | wxALL, vertical_space);
-			psp_sizer->AddStretchSpacer(1);
+			// psp_sizer->AddStretchSpacer(1);
 			player_specific_panel->SetSizer(psp_sizer);
 
 			PCP_Sizer->Add(player_specific_panel, vertical_space);
@@ -125,6 +125,32 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 
 
 	// player card panel ends
+
+	// Play Voice Panel starts
+		// Ill create number of buttons that I have in the audio file.
+		// name all the buttons with the name of the files.
+		// bind them to the button click function.
+		
+		
+
+	// Play voice Panel ends
+		wxPanel* AudioPanel = new wxPanel(MainPanel, wxID_ANY);
+		wxBoxSizer* Audio_Sizer = new wxBoxSizer(wxVERTICAL);
+
+		fs::path audio_path("audios");
+		for (fs::path file_path : fs::directory_iterator(audio_path))
+		{
+			std::string audio_filename = file_path.filename().stem().string();
+
+			wxButton* AudioButton = new wxButton(AudioPanel, wxID_ANY, audio_filename);
+			AudioButton->Bind(wxEVT_BUTTON, [this, file_path](wxCommandEvent& event) {
+				this->On_Audio_ButtonClicked(file_path, event);
+			});
+
+			Audio_Sizer->Add(AudioButton, 0, wxALIGN_CENTER | wxCENTER, 10);
+			AudioPanel->SetSizer(Audio_Sizer);
+		}
+
 
 	// middle text control panel
 
@@ -139,9 +165,17 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		TCP_Sizer->Add(Content, 1, wxEXPAND | wxALL, 10);
 
 		TextCtrlPanel->SetSizer(TCP_Sizer);
-
 	// middle Text Ctrl Adjustment end
 
+	// Colouring the Panels
+		AudioPanel->SetBackgroundColour(wxColour(50, 120, 50));
+		SideButtonPanel->SetBackgroundColour(wxColour(100, 120, 120));
+		MainPanel->SetBackgroundColour(wxColour(120, 100, 140));
+		TextCtrlPanel->SetBackgroundColour(wxColour(120, 120, 160));
+		PlayerCardPanel->SetBackgroundColour(wxColour(80, 80, 180));
+
+
+	MainSizer->Add(AudioPanel, 0, wxEXPAND | wxALL, horizontal_space);
 	MainSizer->Add(SideButtonPanel, 0, wxEXPAND | wxALL, horizontal_space);
 	MainSizer->Add(TextCtrlPanel, 1, wxEXPAND | wxALL, horizontal_space);
 	MainSizer->Add(PlayerCardPanel, 0, wxEXPAND | wxALL, horizontal_space);
@@ -364,6 +398,27 @@ void GameFrame::On_Dice_ButtonClicked(wxCommandEvent& event)
 		DiceFrame* diceFrame = new DiceFrame(this, theDice);
 
 		diceFrame->Show();
+	}
+}
+
+void GameFrame::On_Audio_ButtonClicked(fs::path file_path, wxCommandEvent& event)
+{
+	// Convert fs::path to wxString (ensure proper encoding)
+	wxString wxFilePath = wxString::FromUTF8(file_path.string().c_str());
+	// wxString wxFilePath = wxString::FromUTF8("level-up.wav");
+
+	// Create a wxSound object for asynchronous playback
+	wxSound sound(wxFilePath, wxSOUND_ASYNC);
+
+	if (sound.IsOk())
+	{
+		sound.Play();
+		this->SetStatusText(file_path.string());
+	}
+	else
+	{
+		wxMessageBox("Could not play the audio file: " + wxFilePath,
+			"Error", wxOK | wxICON_ERROR);
 	}
 }
 
