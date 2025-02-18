@@ -34,9 +34,17 @@ enum buttons_constants {
 };
 
 GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
-	: wxFrame(parent, wxID_ANY, "The Game", wxDefaultPosition, wxSize(1280, 720)),
+	: wxFrame(parent, wxID_ANY, "The Game - " + GameFolder, wxDefaultPosition, wxSize(1280, 720)),
 	GM(std::make_shared<GameManager>(GameFolder.ToStdString()))
 {
+	fs::path def_map_path = fs::path("GameData") / GameFolder.ToStdString() / "Maps";
+	fs::path def_player_path = fs::path("GameData") / GameFolder.ToStdString() / "Players";
+	fs::path def_session_path = fs::path("GameData") / GameFolder.ToStdString() / "Sessions";
+
+	fs::create_directory(def_map_path);
+	fs::create_directory(def_player_path);
+	fs::create_directory(def_session_path);
+
 	// initialization
 	loaded_session = new Session();
 
@@ -51,7 +59,9 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	
 	// initialize the datas
 	GM->loadGame();
-	wxMessageBox("Game: " + GameFolder + " is loaded.");
+
+	wxString def_sound_path = (fs::path("def_audios") / "ses_dosyası_sec").string();
+	this->CurrentSound = new wxSound(def_sound_path);
 
 	wxPanel* MainPanel = new wxPanel(this, wxID_ANY);
 	wxBoxSizer * MainSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -67,6 +77,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		wxButton* SaveForNewSessionButton = new wxButton(SideButtonPanel, wxID_ANY, "Save For\nNew Session");
 		wxButton* SaveForCurrentSessionButton = new wxButton(SideButtonPanel, wxID_ANY, "Save For\nCurrent Session");
 		wxButton* DiceButton = new wxButton(SideButtonPanel, wxID_ANY, "Dice");
+		wxButton* AddPlayerButton = new wxButton(SideButtonPanel, wxID_ANY, "Add Player");
 		
 		SBP_Sizer->Add(MapButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(SaveButton, 0, wxALL, vertical_space);
@@ -74,6 +85,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		SBP_Sizer->Add(SaveForNewSessionButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(SaveForCurrentSessionButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(DiceButton, 0, wxALL, vertical_space);
+		SBP_Sizer->Add(AddPlayerButton, 0, wxALL, vertical_space);
 		
 		SaveButton->Bind(wxEVT_BUTTON, &GameFrame::saveBC, this);
 		MapButton->Bind(wxEVT_BUTTON, &GameFrame::On_Map_ButtonClicked, this);
@@ -81,6 +93,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		SaveForNewSessionButton->Bind(wxEVT_BUTTON, &GameFrame::On_SaveForNewSession_ButtonClicked, this);
 		SaveForCurrentSessionButton->Bind(wxEVT_BUTTON, &GameFrame::On_SaveForCurrentSession_ButtonClicked, this);
 		DiceButton->Bind(wxEVT_BUTTON, &GameFrame::On_Dice_ButtonClicked, this);
+		AddPlayerButton->Bind(wxEVT_BUTTON, &GameFrame::On_AddPlayer_ButtonClicked, this);
 
 		SideButtonPanel->SetSizer(SBP_Sizer);
 	// side button adjustmen end.
@@ -131,13 +144,11 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		// name all the buttons with the name of the files.
 		// bind them to the button click function.
 		
-		
-
-	// Play voice Panel ends
 		wxPanel* AudioPanel = new wxPanel(MainPanel, wxID_ANY);
 		wxBoxSizer* Audio_Sizer = new wxBoxSizer(wxVERTICAL);
 
 		fs::path audio_path("audios");
+		// Create audio buttons and add them to the sizer
 		for (fs::path file_path : fs::directory_iterator(audio_path))
 		{
 			std::string audio_filename = file_path.filename().stem().string();
@@ -148,9 +159,24 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 				this->On_Audio_ButtonClicked(file_path, event);
 			});
 
-			Audio_Sizer->Add(AudioButton, 0, wxALIGN_CENTER | wxCENTER, 10);
-			AudioPanel->SetSizer(Audio_Sizer);
+			Audio_Sizer->Add(AudioButton, 0, wxALIGN_CENTER | wxTOP, vertical_space);
 		}
+
+		// Add a stretchable spacer that pushes subsequent items to the bottom
+		Audio_Sizer->AddStretchSpacer(1);
+
+		// Create and add Stop and Resume buttons
+		wxButton* StopAudioButton = new wxButton(AudioPanel, wxID_ANY, "Stop");
+
+		StopAudioButton->Bind(wxEVT_BUTTON, &GameFrame::On_StopAudio_ButtonClicked, this);
+
+		Audio_Sizer->Add(StopAudioButton, 0, wxALIGN_CENTER | wxBOTTOM, vertical_space);
+
+		AudioPanel->SetSizer(Audio_Sizer);
+
+
+	// Play voice Panel ends
+
 
 
 	// middle text control panel
@@ -209,7 +235,6 @@ void GameFrame::saveBC(wxCommandEvent& event)
 void GameFrame::On_Details_ButtonClicked(Player& player, wxCommandEvent& event)
 {
 	PlayerDetailsFrame* frame = new PlayerDetailsFrame(this, &player);
-	wxMessageBox("You have clicked the button of details a player"+ player.getName() + ", congrat.");
 
 	frame->Show();
 }
@@ -402,6 +427,13 @@ void GameFrame::On_Dice_ButtonClicked(wxCommandEvent& event)
 	}
 }
 
+void GameFrame::On_AddPlayer_ButtonClicked(wxCommandEvent& event)
+{
+	this->SetStatusText("Add a new player!");
+	AddPlayerFrame* addPlayer = new AddPlayerFrame(this, this->GM);
+	addPlayer->Show();
+}
+
 void GameFrame::On_Audio_ButtonClicked(fs::path file_path, wxCommandEvent& event)
 {
 	// Convert fs::path to wxString (ensure proper encoding)
@@ -415,18 +447,34 @@ void GameFrame::On_Audio_ButtonClicked(fs::path file_path, wxCommandEvent& event
 	}
 
 	// Create a wxSound object (using async playback by default)
-	wxSound sound(wxFilePath, wxSOUND_ASYNC);
+	// wxSound sound(wxFilePath, wxSOUND_ASYNC);-
+	this->CurrentSound->Create(wxFilePath, false);
 
-	if (sound.IsOk())
+	
+
+	if (this->CurrentSound->IsOk())
 	{
 		// Try playing the sound using the default flag (or explicitly wxSOUND_ASYNC)
-		bool status = sound.Play();
+		bool status = this->CurrentSound->Play(true);
 		this->SetStatusText(wxFilePath + " " + (status ? "played" : "failed to play"));
 	}
 	else
 	{
 		wxMessageBox("Could not load the audio file: " + wxFilePath,
 			"Error", wxOK | wxICON_ERROR);
+	}
+}
+
+void GameFrame::On_StopAudio_ButtonClicked(wxCommandEvent& event)
+{
+	this->SetStatusText("Stop Audio Button Clicked!");
+	if (this->CurrentSound->IsOk())
+	{
+		this->CurrentSound->Stop();
+	}
+	else
+	{
+		wxMessageBox("There is no sound that currently playing.");
 	}
 }
 

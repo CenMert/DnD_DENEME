@@ -68,6 +68,9 @@
     <ClInclude Include="DiceFrame.h">
       <Filter>ui\include</Filter>
     </ClInclude>
+    <ClInclude Include="AddPlayerFrame.h">
+      <Filter>ui\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -107,6 +110,9 @@
       <Filter>gen\src</Filter>
     </ClCompile>
     <ClCompile Include="DiceFrame.cpp">
+      <Filter>ui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="AddPlayerFrame.cpp">
       <Filter>ui\src</Filter>
     </ClCompile>
   </ItemGroup>
