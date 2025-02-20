@@ -12,6 +12,7 @@ Features
 
     Map Display: Share the game map with players to provide visual context.
 
-Purpose
+# Purpose
 
 This application aims to simplify the game-tracking process for GMs, allowing them to focus more on the gameplay and less on administrative tasks. By sharing the screen, GMs can show the played map, the area, and play music and sound effects to set the mood and atmosphere.
+I know, I will add more features but don't know when :) 
