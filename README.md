@@ -1,5 +1,5 @@
-#The D&D Session Tracker
-##Overview
+# The D&D Session Tracker
+## Overview
 
 The D&D Session Tracker is a C++ application designed to help Game Masters (GMs) manage their sessions more efficiently. By incorporating the nlohmann/json library and wxWidgets for UI design, this tracker offers essential features that enhance the game-tracking process.
 Features
