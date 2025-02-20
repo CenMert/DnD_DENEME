@@ -1,5 +1,6 @@
 #include "PlayFrame.h"
 #include "GameFrame.h"
+#include "QuestionDialog.h"
 #include <filesystem> // to get names of the folders
 #include <string>
 namespace fs = std::filesystem;
@@ -17,6 +18,7 @@ wxEND_EVENT_TABLE()
 PlayFrame::PlayFrame(wxWindow* parent)
 	: wxFrame(parent, wxID_ANY, "Play Window")
 {
+
 
 	// the icon operation that appears at the top of the window with its header.
 	wxIcon appIcon;
@@ -45,10 +47,14 @@ PlayFrame::PlayFrame(wxWindow* parent)
 		playPanel, ID_chooseGameButton, "Open Selected Game", wxPoint(200, 300), wxSize(350, 50)
 	); buttonChooseSelectedGame->SetFont(oldFont);
 
+	wxButton* newGame = new wxButton(playPanel, wxID_ANY, "New Game");
+	newGame->Bind(wxEVT_BUTTON, &PlayFrame::On_NewGame_ButtonClicked, this);
+
 	// adjust them all in middle
 	wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
 	sizer->Add(buttonChooseSelectedGame, 0, wxALIGN_CENTER | wxTOP, 25);
 	sizer->Add(choiceWindow, 0, wxALIGN_CENTER | wxTOP, 50);
+	sizer->Add(newGame, 0, wxALIGN_CENTER | wxTOP, 50);
 
 	// COLOURING
 	buttonChooseSelectedGame->SetBackgroundColour(buttonColour);
@@ -70,6 +76,21 @@ void PlayFrame::OnButtonChooseGameClicked(wxCommandEvent& evt)
 	}
 
 	OpenGame();
+}
+
+void PlayFrame::On_NewGame_ButtonClicked(wxCommandEvent& event)
+{
+	QuestionDialog QD(this, "onemsiz", "SO, GAME NAME?");
+	std::string gameName;
+
+	if (QD.ShowModal() == wxID_OK)
+	{
+		gameName = QD.GetAnswer();
+	}
+
+	fs::path newGamePath = fs::path("GameData") / gameName;
+
+	fs::create_directory(newGamePath);
 }
 
 void PlayFrame::OnClose(wxCloseEvent& event)

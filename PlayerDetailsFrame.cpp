@@ -81,10 +81,88 @@ PlayerDetailsFrame::PlayerDetailsFrame(wxWindow* parent, Player* player)
 
     mainSizer->Add(storyBoxSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 15);
 
+    wxButton* SetButton = new wxButton(mainPanel, wxID_ANY, "Set Player");
+    SetButton->Bind(wxEVT_BUTTON, &PlayerDetailsFrame::On_SetPlayer_ButtonClicked, this);
+
+    mainSizer->Add(SetButton, 1, wxEXPAND | wxALL, 10);
+
     // Set the sizer for the main panel
     mainPanel->SetSizer(mainSizer);
 
     // Adjust the frame to fit the contents and centre on the screen
     mainSizer->SetSizeHints(this);
     this->Centre();
+}
+
+void PlayerDetailsFrame::On_SetPlayer_ButtonClicked(wxCommandEvent& event)
+{
+    QuestionDialog setWhat(this, "onemsiz", 
+        "What do you want to set?\n1->name\n2->character name\n3->base attack\n4->health\n5->story");
+    int value = 0;
+    if (setWhat.ShowModal() == wxID_OK) {
+        value = std::stoi(std::string(setWhat.GetAnswer().mb_str()));
+    }
+    else
+    {
+        wxMessageBox("Operation Failed.");
+        return;
+    }
+
+    switch (value)
+    {
+    case 1:
+    {
+        QuestionDialog nameD(this, "onemsiz", "Set Name");
+        if (nameD.ShowModal() == wxID_OK) {
+            std::string answer = nameD.GetAnswer().ToStdString();
+            this->player->setName(answer);
+        }
+        break;
+    }
+
+    case 2:
+    {
+        QuestionDialog characterNameD(this, "onemsiz", "Set Character Name");
+        if(characterNameD.ShowModal()==wxID_OK){
+            std::string answer = characterNameD.GetAnswer().ToStdString();
+            this->player->setCharacterName(answer);
+        }
+        break;
+    }
+
+    case 3:
+    {
+        QuestionDialog baseAttackD(this, "onemsiz", "Set Base Attack - only integer or double!");
+        if(baseAttackD.ShowModal() == wxID_OK){
+            std::string answer = baseAttackD.GetAnswer().ToStdString();
+            this->player->setBaseAttack(std::stod(answer));
+        }
+        break;
+    }
+
+    case 4:
+    {
+        QuestionDialog healthD(this, "onemsiz", "Set Health - only integer or double!");
+        if(healthD.ShowModal() == wxID_OK){
+            std::string answer = healthD.GetAnswer().ToStdString();
+            this->player->setHealth(std::stod(answer));
+        }
+        break;
+    }
+
+    case 5:
+    {
+        QuestionDialog storyD(this, "onemsiz", "Set Story");
+        if(storyD.ShowModal() == wxID_OK){
+            std::string answer = storyD.GetAnswer().ToStdString();
+            this->player->setStory(answer);
+        }
+        break;
+    }
+
+    default:
+        wxMessageBox("Invalid Number!");
+        break;
+    }
+
 }

@@ -11,6 +11,7 @@ public:
 
 private:
 	void OnButtonChooseGameClicked(wxCommandEvent& evt);
+	void On_NewGame_ButtonClicked(wxCommandEvent& event);
 
 	void OnClose(wxCloseEvent& event);
 	wxArrayString FindGameFolder();

@@ -10,6 +10,7 @@
 #include <wx/wx.h>
 #include "MapFrame.h"
 #include "PlayerDetailsFrame.h"
+#include "AddPlayerFrame.h"
 #include "ChoiceDialog.h"
 #include "QuestionDialog.h"
 #include "DiceFrame.h"
@@ -70,6 +71,8 @@ private:
 	std::shared_ptr< GameManager > GM;
 
 	std::string fontStyle = "Papyrus";
+
+	wxSound* CurrentSound;
 	
 	// On Button Events
 	void On_Details_ButtonClicked(Player& player, wxCommandEvent& event);
@@ -79,7 +82,10 @@ private:
 	void On_SaveForNewSession_ButtonClicked(wxCommandEvent& event);
 	void On_SaveForCurrentSession_ButtonClicked(wxCommandEvent& event);
 	void On_Dice_ButtonClicked(wxCommandEvent& event);
+	void On_AddPlayer_ButtonClicked(wxCommandEvent& event);
+	
 	void On_Audio_ButtonClicked(fs::path file_path, wxCommandEvent& event);
+	void On_StopAudio_ButtonClicked(wxCommandEvent& event);
 
 	// additional required functions
 	std::vector< std::string > GetVectorOfContent();
