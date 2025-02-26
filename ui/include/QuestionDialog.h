@@ -2,6 +2,13 @@
 #include "wx/wx.h"
 #include <string>
 
+/*
+TODO:
+    This function always returns a value either the cancel button pressed.
+    You have used this function a few but important places such as Save For new session button in GameFrame.
+    You need to add a feature for cancel. adn maybe you can retun a success type to sure about there is a value?
+*/
+
 class QuestionDialog : public wxDialog
 {
 public:

@@ -76,13 +76,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(SolutionDir)ui\include;$(SolutionDir)gen\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_lib;C:\vcpkg\installed\x64-windows\lib;$(WXWIN)\lib\vc_x64_lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>#(SolutionDir)ui\include;$(SolutionDir)gen\include;$(WXWIN)\lib\vc_lib;C:\vcpkg\installed\x64-windows\lib;$(WXWIN)\lib\vc_x64_lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -94,7 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(SolutionDir)ui\include;$(SolutionDir)gen\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -102,7 +102,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_lib;C:\vcpkg\installed\x64-windows\lib;$(WXWIN)\lib\vc_x64_lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>#(SolutionDir)ui\include;$(SolutionDir)gen\include;$(WXWIN)\lib\vc_lib;C:\vcpkg\installed\x64-windows\lib;$(WXWIN)\lib\vc_x64_lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -112,13 +112,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(SolutionDir)ui\include;$(SolutionDir)gen\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_x64_lib;C:\vcpkg\installed\x64-windows\lib;$(WXWIN)\lib\vc_x64_lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>#(SolutionDir)ui\include;$(SolutionDir)gen\include;$(WXWIN)\lib\vc_x64_lib;C:\vcpkg\installed\x64-windows\lib;$(WXWIN)\lib\vc_x64_lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;$(SolutionDir)ui\include;$(SolutionDir)gen\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -138,45 +138,105 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_x64_lib;C:\vcpkg\installed\x64-windows\lib;$(WXWIN)\lib\vc_x64_lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>#(SolutionDir)ui\include;$(SolutionDir)gen\include;$(WXWIN)\lib\vc_x64_lib;C:\vcpkg\installed\x64-windows\lib;$(WXWIN)\lib\vc_x64_lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AddPlayerFrame.h" />
-    <ClInclude Include="App.h" />
-    <ClInclude Include="ChoiceDialog.h" />
-    <ClInclude Include="Dice.h" />
-    <ClInclude Include="DiceFrame.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameFrame.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="json.hpp" />
-    <ClInclude Include="MainMenuFrame.h" />
-    <ClInclude Include="MapFrame.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerDetailsFrame.h" />
-    <ClInclude Include="PlayFrame.h" />
-    <ClInclude Include="QuestionDialog.h" />
+    <ClInclude Include="gen\include\Dice.h" />
+    <ClInclude Include="gen\include\game.h" />
+    <ClInclude Include="gen\include\GameManager.h" />
+    <ClInclude Include="gen\include\player.h" />
+    <ClInclude Include="gen\include\session.h" />
+    <ClInclude Include="gen\include\json.hpp" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Session.h" />
-    <ClInclude Include="SettingsFrame.h" />
+    <ClInclude Include="ui\include\AddPlayerFrame.h" />
+    <ClInclude Include="ui\include\App.h" />
+    <ClInclude Include="ui\include\ChoiceDialog.h" />
+    <ClInclude Include="ui\include\DiceFrame.h" />
+    <ClInclude Include="ui\include\GameFrame.h" />
+    <ClInclude Include="ui\include\MainMenuFrame.h" />
+    <ClInclude Include="ui\include\MapFrame.h" />
+    <ClInclude Include="ui\include\PlayerDetailsFrame.h" />
+    <ClInclude Include="ui\include\PlayFrame.h" />
+    <ClInclude Include="ui\include\QuestionDialog.h" />
+    <ClInclude Include="ui\include\SettingsFrame.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AddPlayerFrame.cpp" />
-    <ClCompile Include="App.cpp" />
-    <ClCompile Include="Dice.cpp" />
-    <ClCompile Include="DiceFrame.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameFrame.cpp" />
-    <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="MainMenuFrame.cpp" />
-    <ClCompile Include="MapFrame.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerDetailsFrame.cpp" />
-    <ClCompile Include="PlayFrame.cpp" />
-    <ClCompile Include="Session.cpp" />
-    <ClCompile Include="SettingsFrame.cpp" />
+    <ClCompile Include="gen\src\Dice.cpp" />
+    <ClCompile Include="gen\src\game.cpp" />
+    <ClCompile Include="gen\src\GameManager.cpp" />
+    <ClCompile Include="gen\src\player.cpp" />
+    <ClCompile Include="gen\src\Session.cpp" />
+    <ClCompile Include="ui\src\AddPlayerFrame.cpp" />
+    <ClCompile Include="ui\src\App.cpp" />
+    <ClCompile Include="ui\src\DiceFrame.cpp" />
+    <ClCompile Include="ui\src\GameFrame.cpp" />
+    <ClCompile Include="ui\src\MainMenuFrame.cpp" />
+    <ClCompile Include="ui\src\MapFrame.cpp" />
+    <ClCompile Include="ui\src\PlayerDetailsFrame.cpp" />
+    <ClCompile Include="ui\src\PlayFrame.cpp" />
+    <ClCompile Include="ui\src\SettingsFrame.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="animations\dice_animations\Dice0.png" />
+    <Image Include="animations\dice_animations\Dice1.png" />
+    <Image Include="animations\dice_animations\Dice10.png" />
+    <Image Include="animations\dice_animations\Dice11.png" />
+    <Image Include="animations\dice_animations\Dice12.png" />
+    <Image Include="animations\dice_animations\Dice13.png" />
+    <Image Include="animations\dice_animations\Dice14.png" />
+    <Image Include="animations\dice_animations\Dice15.png" />
+    <Image Include="animations\dice_animations\Dice16.png" />
+    <Image Include="animations\dice_animations\Dice17.png" />
+    <Image Include="animations\dice_animations\Dice18.png" />
+    <Image Include="animations\dice_animations\Dice19.png" />
+    <Image Include="animations\dice_animations\Dice2.png" />
+    <Image Include="animations\dice_animations\Dice20.png" />
+    <Image Include="animations\dice_animations\Dice3.png" />
+    <Image Include="animations\dice_animations\Dice4.png" />
+    <Image Include="animations\dice_animations\Dice5.png" />
+    <Image Include="animations\dice_animations\Dice6.png" />
+    <Image Include="animations\dice_animations\Dice7.png" />
+    <Image Include="animations\dice_animations\Dice8.png" />
+    <Image Include="animations\dice_animations\Dice9.png" />
+    <Image Include="animations\dice_animations\dice_rolling_1_example.gif" />
+    <Image Include="animations\dice_animations\dice_rolling_2_example.gif" />
+    <Image Include="animations\dice_animations\dice_rolling_3_example.gif" />
+    <Image Include="animations\dice_animations\dice_rolling_4_example.gif" />
+    <Image Include="animations\dice_animations\dice_rolling_5_example.gif" />
+    <Image Include="animations\dice_animations\dice_rolling_6_example.gif" />
+    <Image Include="def_images\icos\game_icon.ico" />
+    <Image Include="def_images\icos\poition1.ico" />
+    <Image Include="def_images\icos\poition2.ico" />
+    <Image Include="GameData\Game1\Maps\2151694372.png" />
+    <Image Include="GameData\Game1\Maps\DnD_Battle_Map.png" />
+    <Image Include="GameData\Game1\Maps\wow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="audios\cuckoo.wav" />
+    <Media Include="audios\level-up.wav" />
+    <Media Include="def_audios\ses_dosyası_sec.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include=".vscode\settings.json" />
+    <None Include="DnD_DENEME.aps" />
+    <None Include="GameData\Game1\Players\Berke.json" />
+    <None Include="GameData\Game1\Players\Egemen.json" />
+    <None Include="GameData\Game1\Players\player1.json" />
+    <None Include="GameData\Game1\Players\Serhat.json" />
+    <None Include="GameData\Game1\Sessions\Cengiz_deneme_session\Cengiz_deneme_session.json" />
+    <None Include="GameData\Game1\Sessions\Session1\Session1.json" />
+    <None Include="GameData\Game1\Sessions\Session2\Session2.json" />
+    <None Include="LICENSE" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="GameData\Game1\Sessions\Cengiz_deneme_session\Cengiz_deneme_session.txt" />
+    <Text Include="GameData\Game1\Sessions\Session1\Session1.txt" />
+    <Text Include="GameData\Game1\Sessions\Session2\Session2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
