@@ -16,7 +16,7 @@ wxBEGIN_EVENT_TABLE(PlayFrame, wxFrame)
 wxEND_EVENT_TABLE()
 
 PlayFrame::PlayFrame(wxWindow* parent)
-	: wxFrame(parent, wxID_ANY, "Play Window")
+	: wxFrame(parent, wxID_ANY, "Play Window", wxDefaultPosition, wxSize(500, 400))
 {
 
 
@@ -48,6 +48,7 @@ PlayFrame::PlayFrame(wxWindow* parent)
 	); buttonChooseSelectedGame->SetFont(oldFont);
 
 	wxButton* newGame = new wxButton(playPanel, wxID_ANY, "New Game");
+	newGame->SetFont(oldFont);
 	newGame->Bind(wxEVT_BUTTON, &PlayFrame::On_NewGame_ButtonClicked, this);
 
 	// adjust them all in middle

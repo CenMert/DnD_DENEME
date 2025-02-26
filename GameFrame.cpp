@@ -49,6 +49,12 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	loaded_session = new Session();
 
 	wxFont oldFont(10, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, fontStyle);
+	wxColour darkBrownColour = wxColour(89, 49, 38);
+	wxColour dark_lightBrownColour = wxColour(159, 92, 44);
+	wxColour brownColour = wxColour(208, 146, 65);
+	wxColour lightBrownColour = wxColour(232, 194, 122);
+	wxColour lLightBrownColour = wxColour(251, 238, 194);
+
 	// the icon operation that appears at the top of the window with its header.
 	wxIcon appIcon;
 	if (appIcon.LoadFile("game_icon.ico", wxBITMAP_TYPE_ICO)) { SetIcon(appIcon); }
@@ -123,7 +129,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 			wxBoxSizer* psp_sizer = new wxBoxSizer(wxVERTICAL);
 
 			// adjustment
-			player_specific_panel->SetBackgroundColour(backgroundColour);
+			player_specific_panel->SetBackgroundColour(lLightBrownColour);
 			// end adjustment
 
 			wxStaticText* player_static_txt = new wxStaticText(player_specific_panel, wxID_ANY,
@@ -210,11 +216,13 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	// middle Text Ctrl Adjustment end
 
 	// Colouring the Panels
-		AudioPanel->SetBackgroundColour(wxColour(50, 120, 50));
-		SideButtonPanel->SetBackgroundColour(wxColour(100, 120, 120));
-		MainPanel->SetBackgroundColour(wxColour(120, 100, 140));
-		TextCtrlPanel->SetBackgroundColour(wxColour(120, 120, 160));
-		PlayerCardPanel->SetBackgroundColour(wxColour(80, 80, 180));
+
+
+		AudioPanel->SetBackgroundColour(dark_lightBrownColour);
+		SideButtonPanel->SetBackgroundColour(brownColour);
+		MainPanel->SetBackgroundColour(darkBrownColour);
+		TextCtrlPanel->SetBackgroundColour(lightBrownColour);
+		PlayerCardPanel->SetBackgroundColour(lLightBrownColour);
 
 
 	MainSizer->Add(AudioPanel, 0, wxEXPAND | wxALL, horizontal_space);
