@@ -22,7 +22,7 @@ PlayFrame::PlayFrame(wxWindow* parent)
 
 	// the icon operation that appears at the top of the window with its header.
 	wxIcon appIcon;
-	if (appIcon.LoadFile("poition2.ico", wxBITMAP_TYPE_ICO)) { SetIcon(appIcon); }
+	if (appIcon.LoadFile((fs::path("def_images") / "icos" / "poition2.ico").string(), wxBITMAP_TYPE_ICO)) { SetIcon(appIcon); }
 	else { wxLogError("Icon File couldn't added to window."); }
 
 	wxPanel* playPanel = new wxPanel(this);

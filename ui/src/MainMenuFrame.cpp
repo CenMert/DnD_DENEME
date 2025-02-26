@@ -1,6 +1,9 @@
 #include "MainMenuFrame.h"
 #include "SettingsFrame.h"
 #include "PlayFrame.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 enum IDs {
     ID_buttonPlay = 200,
@@ -19,7 +22,7 @@ MainMenuFrame::MainMenuFrame(const wxString& title)
 {
     // the icon operation that appears at the top of the window with its header.
     wxIcon appIcon;
-    if (appIcon.LoadFile("poition1.ico", wxBITMAP_TYPE_ICO)) { SetIcon(appIcon); }
+    if (appIcon.LoadFile((fs::path("def_images") / "icos" / "poition1.ico").string(), wxBITMAP_TYPE_ICO)) { SetIcon(appIcon); }
     else { wxLogError("Icon File couldn't added to window."); }
 
     wxPanel* mainPanel = new wxPanel(this);
