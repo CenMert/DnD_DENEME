@@ -48,7 +48,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 	// initialization
 	loaded_session = new Session();
 
-	wxFont oldFont = wxFont(wxString(fontStyle));
+	wxFont oldFont(10, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, fontStyle);
 	// the icon operation that appears at the top of the window with its header.
 	wxIcon appIcon;
 	if (appIcon.LoadFile("game_icon.ico", wxBITMAP_TYPE_ICO)) { SetIcon(appIcon); }
@@ -86,6 +86,14 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		SBP_Sizer->Add(SaveForCurrentSessionButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(DiceButton, 0, wxALL, vertical_space);
 		SBP_Sizer->Add(AddPlayerButton, 0, wxALL, vertical_space);
+
+		SaveButton->SetFont(oldFont);
+		MapButton->SetFont(oldFont);
+		LoadButton->SetFont(oldFont);
+		SaveForNewSessionButton->SetFont(oldFont);
+		SaveForCurrentSessionButton->SetFont(oldFont);
+		DiceButton->SetFont(oldFont);
+		AddPlayerButton->SetFont(oldFont);
 		
 		SaveButton->Bind(wxEVT_BUTTON, &GameFrame::saveBC, this);
 		MapButton->Bind(wxEVT_BUTTON, &GameFrame::On_Map_ButtonClicked, this);
@@ -126,6 +134,9 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 				this->On_Details_ButtonClicked(player, event);
 			});
 
+			player_static_txt->SetFont(oldFont);
+			player_detail_button->SetFont(oldFont);
+
 			psp_sizer->Add(player_static_txt, 0, wxALIGN_CENTER | wxALL, vertical_space);
 			psp_sizer->Add(player_detail_button, 0, wxALIGN_CENTER | wxALL, vertical_space);
 			// psp_sizer->AddStretchSpacer(1);
@@ -159,6 +170,8 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 				this->On_Audio_ButtonClicked(file_path, event);
 			});
 
+			AudioButton->SetFont(oldFont);
+
 			Audio_Sizer->Add(AudioButton, 0, wxALIGN_CENTER | wxTOP, vertical_space);
 		}
 
@@ -169,6 +182,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 		wxButton* StopAudioButton = new wxButton(AudioPanel, wxID_ANY, "Stop");
 
 		StopAudioButton->Bind(wxEVT_BUTTON, &GameFrame::On_StopAudio_ButtonClicked, this);
+		StopAudioButton->SetFont(oldFont);
 
 		Audio_Sizer->Add(StopAudioButton, 0, wxALIGN_CENTER | wxBOTTOM, vertical_space);
 
@@ -188,6 +202,7 @@ GameFrame::GameFrame(wxWindow* parent, wxString GameFolder)
 			wxT("Type Something."),
 			wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_RICH2
 		);
+		this->Content->SetFont(oldFont);
 
 		TCP_Sizer->Add(Content, 1, wxEXPAND | wxALL, 10);
 
