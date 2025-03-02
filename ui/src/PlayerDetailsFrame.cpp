@@ -36,8 +36,8 @@ PlayerDetailsFrame::PlayerDetailsFrame(wxWindow* parent, Player* player)
     // SIZER ADJUSTMENTS END
 	// -------------------------------------
 
-    // TODO: this need to be changed depends on the player's image choice,
-    // TODO: add more images to the pp_images and configure related to the players
+    // TODO this need to be changed depends on the player's image choice,
+    // TODO add more images to the pp_images and configure related to the players
 
     wxInitAllImageHandlers();
     fs::path image_path = fs::path("def_images") / "pp_images" / "dragon.png";

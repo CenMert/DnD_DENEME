@@ -139,6 +139,7 @@ void PlayFrame::OpenGame()
 	GameFrame* gameWindow = new GameFrame(this, getSelectedGame());
 	gameWindow->Show();
 	gameWindow->Center();
+	this->Hide(); // Hide PlayFrame while game is open
 
 	// this->Hide(); // Hide PlayFrame while game is open
 }
