@@ -23,16 +23,19 @@ private:
     Dice theDice;
     fs::path gif_path;  // this holds the PNG file path
 
-    // Panel for displaying the image and a static bitmap control.
-    wxPanel* m_gifPanel = nullptr;
-    wxStaticBitmap* m_staticBitmap = nullptr;
-
     // Function to set the file path based on the dice roll.
     void RollAndGetGIFPath();
+    void updateRolledDices();
+    void OnRoll(wxCommandEvent& WXUNUSED(event));
+    void OnTimer(wxTimerEvent& event);
 
-    // Event handler for the roll button.
-    void On_Roll_ButtonClicked(wxCommandEvent& event);
+    // Here is the vars and funcs that inspired from wxWidgets sample of aninate
+	wxAnimationCtrlBase* m_animationCtrl;
+    wxStaticText* lastRolledDices;
+    wxTimer m_timer;
+    int number;
+	std::vector<int>* rolledDices;
 
-    // Function to check if a PNG file is readable.
-    bool IsPNGReadableWithHandler(const std::string& png_path);
+    wxFont oldFont = wxFont(10, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, "Papyrus");
+
 };

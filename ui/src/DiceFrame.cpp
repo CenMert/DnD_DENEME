@@ -1,77 +1,104 @@
 #include "DiceFrame.h"
 
+enum
+{
+    ID_ROLL = 1
+
+};
+
+
 // Constructor
 DiceFrame::DiceFrame(wxWindow* parent, Dice theDice)
-    : wxFrame(parent, wxID_ANY, "Rolling Dice Window", wxDefaultPosition, wxSize(128, 128)),
+    : wxFrame(parent, wxID_ANY, "Rolling Dice Window", wxDefaultPosition, wxSize(300, 500)),
     theDice(theDice)
 {
-    // Create the status bar
+    wxMenu* file_menu = new wxMenu;
+
+#if wxUSE_FILEDLG
+    file_menu->Append(wxID_OPEN, "&Open Animation...\tCtrl+O", "Loads an animation");
+#endif // wxUSE_FILEDLG
+    file_menu->Append(wxID_EXIT);
+
+    wxMenu* play_menu = new wxMenu;
+    play_menu->Append(ID_ROLL, "Roll\tCtrl+P", "Roll the dice");
+
+#ifdef wxHAS_NATIVE_ANIMATIONCTRL
+    play_menu->AppendSeparator();
+    play_menu->AppendCheckItem(ID_USE_GENERIC, "Use &generic animation\tCtrl+G",
+        "Selects whether native or generic version is used");
+#endif // wxHAS_NATIVE_ANIMATIONCTRL
+
+    wxMenu* help_menu = new wxMenu;
+    help_menu->Append(wxID_ABOUT);
+
+    wxMenuBar* menu_bar = new wxMenuBar;
+
+    menu_bar->Append(file_menu, "&File");
+    menu_bar->Append(play_menu, "&Animation");
+    menu_bar->Append(help_menu, "&Help");
+    menu_bar->Append(new wxMenu, "&Edit");
+
+    // Associate the menu bar with this frame
+    SetMenuBar(menu_bar);
+
+#if wxUSE_STATUSBAR
     CreateStatusBar();
+#endif // wxUSE_STATUSBAR
 
-    // Initialize image handlers
-    wxInitAllImageHandlers();
+    // use a wxBoxSizer otherwise wxFrame will automatically
+    // resize the m_animationCtrl to fill its client area on
+    // user resizes
+    wxSizer* sz = new wxBoxSizer(wxVERTICAL);
+    this->rolledDices = new std::vector<int>(3, 0);
 
-    // Create the panel for displaying the image.
-    m_gifPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(128, 128));
-    m_gifPanel->SetBackgroundColour(wxColor(100, 100, 200));
 
-    // Create the static bitmap to display the PNG.
-    // Initially, we create it with a null bitmap.
-    m_staticBitmap = new wxStaticBitmap(m_gifPanel, wxID_ANY, wxNullBitmap, wxPoint(0, 0), wxSize(128, 128));
+    m_animationCtrl = new wxAnimationCtrl(this, wxID_ANY, wxNullAnimation, wxDefaultPosition, wxSize(256, 256));
+    fs::path default_path = fs::path("animations") / "dice_animations" / "Dice0.png";
+    if (m_animationCtrl->LoadFile(default_path.string()))
+        m_animationCtrl->Show();
 
-    // Load and display the initial image (Dice0.png)
-    fs::path initialPath = fs::path("animations") / "dice_animations" / "Dice0.png";
-    wxImage initialImage;
-    if (initialImage.LoadFile(initialPath.string(), wxBITMAP_TYPE_PNG))
-    {
-        m_staticBitmap->SetBitmap(wxBitmap(initialImage));
-        m_gifPanel->Refresh();
-    }
-    else
-    {
-        wxLogError("Failed to load initial PNG image.");
-    }
+	wxButton* rollButton = new wxButton(this, ID_ROLL, "Roll");
+	rollButton->Bind(wxEVT_BUTTON, &DiceFrame::OnRoll, this);
+    this->m_timer.Bind(wxEVT_TIMER, &DiceFrame::OnTimer, this);
 
-    // Create a panel for the roll button.
-    wxPanel* button_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(50, 50));
-    button_panel->SetBackgroundColour(wxColor(100, 200, 200));
-
-    // Create the roll button and bind its event.
-    wxButton* rollButton = new wxButton(button_panel, wxID_ANY, "Roll the " + theDice.getDiceType());
-    rollButton->Bind(wxEVT_BUTTON, &DiceFrame::On_Roll_ButtonClicked, this);
-
-    // Lay out the panels using a box sizer.
-    wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
-    main_sizer->Add(m_gifPanel, 1, wxEXPAND | wxALL, 10);
-    main_sizer->Add(button_panel, 0, wxEXPAND | wxALL, 10);
-    this->SetSizerAndFit(main_sizer);
+	this->lastRolledDices = new wxStaticText(this, wxID_ANY, "Last Rolled Dices: 0, 0, 0", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    wxStaticText* topHeaderText = new wxStaticText(this, wxID_ANY, "Dice is Rolling:");
+    topHeaderText->SetFont(oldFont);
+	this->lastRolledDices->SetFont(oldFont);
+    
+    this->SetBackgroundColour(wxColour(251, 238, 194));
+    sz->Add(topHeaderText, wxSizerFlags().Centre().Border());
+    sz->Add(m_animationCtrl, wxSizerFlags().Centre().Border());
+	sz->Add(rollButton, wxSizerFlags().Centre().Border());
+	sz->Add(this->lastRolledDices, wxSizerFlags().Centre().Border());
+    SetSizer(sz);
 }
 
 // Sets the file path for the PNG based on the dice roll.
 void DiceFrame::RollAndGetGIFPath() {
-    int number = this->theDice.roll();
+    this->number = this->theDice.roll();
     switch (number)
     {
     case 0:
         this->gif_path = fs::path("animations") / "dice_animations" / "Dice0.png";
         break;
     case 1:
-        this->gif_path = fs::path("animations") / "dice_animations" / "Dice1.png";
+        this->gif_path = fs::path("animations") / "dice_animations" / "dice_rolling_1_upscaled_enhanced.gif";
         break;
     case 2:
-        this->gif_path = fs::path("animations") / "dice_animations" / "Dice2.png";
+        this->gif_path = fs::path("animations") / "dice_animations" / "dice_rolling_2_upscaled_enhanced.gif";
         break;
     case 3:
-        this->gif_path = fs::path("animations") / "dice_animations" / "Dice3.png";
+        this->gif_path = fs::path("animations") / "dice_animations" / "dice_rolling_3_upscaled_enhanced.gif";
         break;
     case 4:
-        this->gif_path = fs::path("animations") / "dice_animations" / "Dice4.png";
+        this->gif_path = fs::path("animations") / "dice_animations" / "dice_rolling_4_upscaled_enhanced.gif";
         break;
     case 5:
-        this->gif_path = fs::path("animations") / "dice_animations" / "Dice5.png";
+        this->gif_path = fs::path("animations") / "dice_animations" / "dice_rolling_5_upscaled_enhanced.gif";
         break;
     case 6:
-        this->gif_path = fs::path("animations") / "dice_animations" / "Dice6.png";
+        this->gif_path = fs::path("animations") / "dice_animations" / "dice_rolling_6_upscaled_enhanced.gif";
         break;
     case 7:
         this->gif_path = fs::path("animations") / "dice_animations" / "Dice7.png";
@@ -120,50 +147,39 @@ void DiceFrame::RollAndGetGIFPath() {
     }
 }
 
-// Called when the roll button is clicked.
-void DiceFrame::On_Roll_ButtonClicked(wxCommandEvent& event)
+void DiceFrame::updateRolledDices()
 {
-    // Determine the file path based on the dice roll.
+    this->rolledDices->pop_back();
+    int first = this->rolledDices->at(0);
+	int second = this->rolledDices->at(1);
+
+    std::vector<int>* newVec = new std::vector<int>{ this->number, first, second };
+
+    this->rolledDices->swap(*newVec);
+    delete newVec;
+}
+
+void DiceFrame::OnRoll(wxCommandEvent& WXUNUSED(event))
+{
     RollAndGetGIFPath();
-    bool status = IsPNGReadableWithHandler(this->gif_path.string());
-
-    // Ensure image handlers are initialized.
-    wxInitAllImageHandlers();
-
-    if (status)
-    {
-        // Load the PNG image.
-        wxImage image;
-        if (!image.LoadFile(this->gif_path.string(), wxBITMAP_TYPE_PNG))
-        {
-            wxLogError("Failed to load PNG file.");
-            return;
-        }
-
-        // Display the PNG image in the static bitmap control.
-        m_staticBitmap->SetBitmap(wxBitmap(image));
-        m_gifPanel->Refresh();
-
-        this->SetStatusText("PNG loaded: " + this->gif_path.string());
+    updateRolledDices(); // update and display at the and
+    if (m_animationCtrl->LoadFile(gif_path.string()))
+    { 
+        m_animationCtrl->Play();
+        this->m_timer.StartOnce(2200);
+        // our animations are 1500 miliseconds long
+        // so wait that long then call the timer, it will stop the animation.
     }
-    else
-    {
-        wxLogError("Failed to read PNG file.");
-    }
+
 }
 
-// Checks if the PNG file can be opened and loaded.
-bool DiceFrame::IsPNGReadableWithHandler(const std::string& png_path)
+void DiceFrame::OnTimer(wxTimerEvent& event)
 {
-    // Open the file stream.
-    wxFileInputStream fileStream(png_path);
-    if (!fileStream.IsOk())
-        return false;
+    // Stop the animation control when the timer fires
+    if (m_animationCtrl) m_animationCtrl->Stop();
+    std::string text = "Last Rolled Dices: " +
+        std::to_string(this->rolledDices->at(0)) + ", " + std::to_string(this->rolledDices->at(1)) + ", " + std::to_string(this->rolledDices->at(2));
 
-    // Try loading the image as PNG.
-    wxImage testImage;
-    if (!testImage.LoadFile(png_path, wxBITMAP_TYPE_PNG))
-        return false;
-
-    return true;
+    lastRolledDices->SetLabelText(text);
 }
+
