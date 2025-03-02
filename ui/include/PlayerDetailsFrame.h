@@ -2,6 +2,10 @@
 #include <wx/wx.h>
 #include "Player.h"
 #include "QuestionDialog.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
+using json = nlohmann::json;
 
 class PlayerDetailsFrame : public wxFrame
 {
@@ -16,5 +20,6 @@ private:
 	Player* player;
 
 	void On_SetPlayer_ButtonClicked(wxCommandEvent& event);
+	std::string getTwoDigitAfterComma(double value);
 };
 

@@ -2,96 +2,92 @@
 #include <wx/statline.h>   // For wxStaticLine
 
 PlayerDetailsFrame::PlayerDetailsFrame(wxWindow* parent, Player* player)
-    : wxFrame(parent, wxID_ANY, "Player Information", wxDefaultPosition, wxSize(500, 400)), player(player)
+    : wxFrame(parent, wxID_ANY, "Player Information", wxPoint(0, 0), wxSize(500, 400)), player(player)
 {
-    // Create the main panel with a light background colour
-    wxPanel* mainPanel = new wxPanel(this, wxID_ANY);
-    mainPanel->SetBackgroundColour(wxColour(245, 245, 245));
+    std::string fontStyle = "Papyrus";
+    wxFont oldFont(15, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, fontStyle);
 
-    // Overall vertical sizer for the frame
-    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+    // panel for the palyers pixelated Photo
+    wxPanel* topLeftPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(128, 128));
+	
+    // panel fot the players name and class
+    wxPanel* topRightPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(300, 128));
+	
+    // panel for the players detailed information and more options for feature details.
+    wxPanel* bottomPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(428, 128));
 
-    // --- Header ---
-    wxStaticText* header = new wxStaticText(mainPanel, wxID_ANY, "Player Details", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-    wxFont headerFont(18, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
-    header->SetFont(headerFont);
-    mainSizer->Add(header, 0, wxALIGN_CENTER | wxTOP | wxBOTTOM, 15);
+    // sizer for 2 panel of top
+    wxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+    wxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxSizer* bottomSizer = new wxBoxSizer(wxVERTICAL);
 
-    // --- Basic Information Section ---
-    // Use a static box to group related information
-    wxStaticBoxSizer* infoBoxSizer = new wxStaticBoxSizer(wxVERTICAL, mainPanel, "Basic Information");
+    topSizer->Add(topLeftPanel, 0, wxLEFT | wxRIGHT, 10);
+	topSizer->Add(topRightPanel, 1, wxEXPAND | wxRIGHT, 10);
+	bottomSizer->Add(bottomPanel, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 10);
 
-    // Grid sizer for aligning labels and their values
-    wxGridSizer* infoGrid = new wxGridSizer(2, 10, 10);  // 2 columns, 10px horizontal and vertical gap
+    topLeftPanel->SetBackgroundColour(wxColour(238, 207, 128));
+    topRightPanel->SetBackgroundColour(wxColour(233, 111, 46));
+    bottomPanel->SetBackgroundColour(wxColour(233, 111, 46));
+    
+	mainSizer->Add(topSizer, 0, wxEXPAND | wxBOTTOM | wxTOP, 10);
+    mainSizer->Add(bottomSizer, 1, wxEXPAND | wxBOTTOM, 10);
 
-    // Define fonts for labels and values
-    wxFont labelFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
-    wxFont valueFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
+    // -------------------------------------
+    // SIZER ADJUSTMENTS END
+	// -------------------------------------
 
-    // Name
-    wxStaticText* nameLabel = new wxStaticText(mainPanel, wxID_ANY, "Name:", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
-    nameLabel->SetFont(labelFont);
-    wxStaticText* nameValue = new wxStaticText(mainPanel, wxID_ANY, player->getName());
-    nameValue->SetFont(valueFont);
-    infoGrid->Add(nameLabel, 0, wxALIGN_CENTER_VERTICAL);
-    infoGrid->Add(nameValue, 0, wxALIGN_CENTER_VERTICAL);
+    // TODO: this need to be changed depends on the player's image choice,
+    // TODO: add more images to the pp_images and configure related to the players
 
-    // Character Name
-    wxStaticText* charLabel = new wxStaticText(mainPanel, wxID_ANY, "Character:", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
-    charLabel->SetFont(labelFont);
-    wxStaticText* charValue = new wxStaticText(mainPanel, wxID_ANY, player->getCharacterName());
-    charValue->SetFont(valueFont);
-    infoGrid->Add(charLabel, 0, wxALIGN_CENTER_VERTICAL);
-    infoGrid->Add(charValue, 0, wxALIGN_CENTER_VERTICAL);
+    wxInitAllImageHandlers();
+    fs::path image_path = fs::path("def_images") / "pp_images" / "dragon.png";
+    wxImage playerImage;
+    if (!playerImage.LoadFile(image_path.string(), wxBITMAP_TYPE_PNG))
+    {
+        wxLogError("Failed to load image file.");
+        // Handle error appropriately.
+    }
+    else if (!playerImage.IsOk())
+    {
+        wxLogError("Loaded image is not valid.");
+        // Handle error.
+    }
+    wxBitmap playerBitmap(playerImage);
+    wxStaticBitmap* playerBitmapPanel = new wxStaticBitmap(topLeftPanel, wxID_ANY, playerBitmap);
+    wxSizer* topLeftPanel_sizer = new wxBoxSizer(wxVERTICAL);
+    topLeftPanel_sizer->Add(playerBitmapPanel, 1, wxEXPAND | wxALL, 10);
+    topLeftPanel->SetSizerAndFit(topLeftPanel_sizer);
 
-    // Health
-    wxStaticText* healthLabel = new wxStaticText(mainPanel, wxID_ANY, "Health:", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
-    healthLabel->SetFont(labelFont);
-    wxStaticText* healthValue = new wxStaticText(mainPanel, wxID_ANY, std::to_string(player->getHealth()));
-    healthValue->SetFont(valueFont);
-    infoGrid->Add(healthLabel, 0, wxALIGN_CENTER_VERTICAL);
-    infoGrid->Add(healthValue, 0, wxALIGN_CENTER_VERTICAL);
+    // -------------------------------------
+    // IMAGE OPENING END 
+    // -------------------------------------
 
-    // Base Attack
-    wxStaticText* attackLabel = new wxStaticText(mainPanel, wxID_ANY, "Base Attack:", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
-    attackLabel->SetFont(labelFont);
-    wxStaticText* attackValue = new wxStaticText(mainPanel, wxID_ANY, std::to_string(player->getBaseAttack()));
-    attackValue->SetFont(valueFont);
-    infoGrid->Add(attackLabel, 0, wxALIGN_CENTER_VERTICAL);
-    infoGrid->Add(attackValue, 0, wxALIGN_CENTER_VERTICAL);
+	wxStaticText* playerName = new wxStaticText(topRightPanel, wxID_ANY, player->getName(), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+	wxStaticText* playerCharacterName = new wxStaticText(topRightPanel, wxID_ANY, player->getCharacterName(), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+	playerName->SetFont(oldFont);
+	playerCharacterName->SetFont(oldFont);
 
-    // Add the grid to the static box sizer with padding
-    infoBoxSizer->Add(infoGrid, 1, wxEXPAND | wxALL, 10);
-    mainSizer->Add(infoBoxSizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 15);
+	wxStaticText* playerBaseAttack = new wxStaticText(bottomPanel, wxID_ANY, 
+        "Base Attack: " + getTwoDigitAfterComma(player->getBaseAttack()), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    playerBaseAttack->SetFont(oldFont);
+	wxStaticText* playerHealth = new wxStaticText(bottomPanel, wxID_ANY, 
+        "Health: " + getTwoDigitAfterComma(player->getHealth()), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+	playerHealth->SetFont(oldFont);
+	wxStaticText* playerStory = new wxStaticText(bottomPanel, wxID_ANY, "Story: " + player->getStory(), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    playerStory->SetFont(oldFont);
+    this->SetSizerAndFit(mainSizer);
 
-    // --- Separator ---
-    mainSizer->AddSpacer(10);
-    wxStaticLine* separator = new wxStaticLine(mainPanel, wxID_ANY);
-    mainSizer->Add(separator, 0, wxEXPAND | wxLEFT | wxRIGHT, 15);
-    mainSizer->AddSpacer(10);
+    wxSizer* topRightPanel_sizer = new wxBoxSizer(wxVERTICAL);
+	topRightPanel_sizer->Add(playerName, 1, wxEXPAND | wxALL, 5);
+	topRightPanel_sizer->Add(playerCharacterName, 1, wxEXPAND | wxALL, 5);
 
-    // --- Story Section ---
-    // Use a static box sizer for the story section
-    wxStaticBoxSizer* storyBoxSizer = new wxStaticBoxSizer(wxVERTICAL, mainPanel, "Story");
-    wxTextCtrl* storyBox = new wxTextCtrl(mainPanel, wxID_ANY, player->getStory(),
-        wxDefaultPosition, wxSize(-1, 150),
-        wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH2);
-    storyBox->SetBackgroundColour(wxColour(250, 250, 250));  // Slightly different white for contrast
-    storyBoxSizer->Add(storyBox, 1, wxEXPAND | wxALL, 10);
+	wxSizer* bottomPanel_sizer = new wxBoxSizer(wxVERTICAL);
+	bottomPanel_sizer->Add(playerBaseAttack, 1, wxEXPAND | wxALL, 10);
+	bottomPanel_sizer->Add(playerHealth, 1, wxEXPAND | wxALL, 10);
+	bottomPanel_sizer->Add(playerStory, 1, wxEXPAND | wxALL, 10);
 
-    mainSizer->Add(storyBoxSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 15);
-
-    wxButton* SetButton = new wxButton(mainPanel, wxID_ANY, "Set Player");
-    SetButton->Bind(wxEVT_BUTTON, &PlayerDetailsFrame::On_SetPlayer_ButtonClicked, this);
-
-    mainSizer->Add(SetButton, 1, wxEXPAND | wxALL, 10);
-
-    // Set the sizer for the main panel
-    mainPanel->SetSizer(mainSizer);
-
-    // Adjust the frame to fit the contents and centre on the screen
-    mainSizer->SetSizeHints(this);
-    this->Centre();
+	topRightPanel->SetSizerAndFit(topRightPanel_sizer);
+    bottomPanel->SetSizerAndFit(bottomPanel_sizer);
 }
 
 void PlayerDetailsFrame::On_SetPlayer_ButtonClicked(wxCommandEvent& event)
@@ -165,4 +161,23 @@ void PlayerDetailsFrame::On_SetPlayer_ButtonClicked(wxCommandEvent& event)
         break;
     }
 
+}
+
+std::string PlayerDetailsFrame::getTwoDigitAfterComma(double value)
+{
+	std::string temp = std::to_string(value);
+	for (int i = 0; i < temp.size(); i++)
+	{
+		if (temp[i] == '.')
+		{
+			if (temp.size() - i > 2)
+			{
+				return temp.substr(0, i + 3);
+			}
+			else
+			{
+				return temp;
+			}
+		}
+	}
 }

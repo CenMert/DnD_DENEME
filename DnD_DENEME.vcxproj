@@ -209,6 +209,7 @@
     <Image Include="def_images\icos\game_icon.ico" />
     <Image Include="def_images\icos\poition1.ico" />
     <Image Include="def_images\icos\poition2.ico" />
+    <Image Include="def_images\pp_images\dragon.png" />
     <Image Include="GameData\Game1\Maps\2151694372.png" />
     <Image Include="GameData\Game1\Maps\DnD_Battle_Map.png" />
     <Image Include="GameData\Game1\Maps\wow.png" />
